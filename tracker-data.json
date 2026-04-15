@@ -1,0 +1,708 @@
+{
+  "reps": [
+    {
+      "name": "Joel Salama",
+      "role": "Management"
+    },
+    {
+      "name": "Marc-André Legrand",
+      "role": "Management"
+    },
+    {
+      "name": "Anne Deslauriers",
+      "role": "External"
+    },
+    {
+      "name": "Ayk Asaduryan",
+      "role": "External"
+    },
+    {
+      "name": "Daniel Trojanowski",
+      "role": "External"
+    },
+    {
+      "name": "Dany O'Dowd",
+      "role": "External"
+    },
+    {
+      "name": "Didier Chambras",
+      "role": "External"
+    },
+    {
+      "name": "Eric Des Groseilliers",
+      "role": "External"
+    },
+    {
+      "name": "Isaac Sirois",
+      "role": "External"
+    },
+    {
+      "name": "Luis Carvajal",
+      "role": "External"
+    },
+    {
+      "name": "Mathieu Touzel",
+      "role": "External"
+    },
+    {
+      "name": "Philip Descôteaux",
+      "role": "External"
+    },
+    {
+      "name": "Ray Carson",
+      "role": "External"
+    },
+    {
+      "name": "Rep 12",
+      "role": "External"
+    },
+    {
+      "name": "Rep 13",
+      "role": "External"
+    },
+    {
+      "name": "Rep 14",
+      "role": "External"
+    },
+    {
+      "name": "Rep 15",
+      "role": "External"
+    },
+    {
+      "name": "Rep 16",
+      "role": "External"
+    },
+    {
+      "name": "Rep 17",
+      "role": "External"
+    },
+    {
+      "name": "Rep 18",
+      "role": "External"
+    },
+    {
+      "name": "Rep 19",
+      "role": "External"
+    }
+  ],
+  "weeks": [
+    {
+      "label": "Apr 13",
+      "title": "WEEK OF APR 6, 2025",
+      "deadline": "April 13 before 12:00 PM"
+    },
+    {
+      "label": "Apr 20",
+      "title": "WEEK OF APR 13, 2025",
+      "deadline": "April 20 before 12:00 PM"
+    },
+    {
+      "label": "Apr 27",
+      "title": "WEEK OF APR 20, 2025",
+      "deadline": "April 27 before 12:00 PM"
+    },
+    {
+      "label": "Mai 4",
+      "title": "WEEK OF APR 27, 2025",
+      "deadline": "May 4 before 12:00 PM"
+    }
+  ],
+  "data": [
+    [
+      {
+        "days": "3",
+        "visits": "9",
+        "appts": "7",
+        "deals": "0",
+        "notes": "This was a 4-day week because of Easter Monday."
+      },
+      {
+        "days": "1",
+        "visits": "1",
+        "appts": "4",
+        "deals": "?",
+        "notes": ""
+      },
+      {
+        "days": "1",
+        "visits": "5",
+        "appts": "2",
+        "deals": "2",
+        "notes": "fait 1 présentation en virtuelle"
+      },
+      {
+        "days": "3",
+        "visits": "5",
+        "appts": "2",
+        "deals": "0",
+        "notes": "Was onroad 3 days. Note, not included are meeting via videoconference with other energy partnerships and projects  ( 3 additional meetings)"
+      },
+      {
+        "days": "1",
+        "visits": "1",
+        "appts": "2",
+        "deals": "40",
+        "notes": "CMPX Follow Ups all week."
+      },
+      {
+        "days": "1",
+        "visits": "3",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "5",
+        "visits": "14",
+        "appts": "14",
+        "deals": "?",
+        "notes": ""
+      },
+      {
+        "days": "0",
+        "visits": "0",
+        "appts": "2",
+        "deals": "2",
+        "notes": "Off mercredi et vendredi -Lundi congé"
+      },
+      {
+        "days": "2",
+        "visits": "4",
+        "appts": "5",
+        "deals": "9",
+        "notes": ""
+      },
+      {
+        "days": "5",
+        "visits": "50",
+        "appts": "3",
+        "deals": "0",
+        "notes": "Lundi route, mardi salon, mercredi et jeudi formations, vendredi suivi pour me mettre à jour!"
+      },
+      {
+        "days": "3",
+        "visits": "50",
+        "appts": "",
+        "deals": "1",
+        "notes": "mardi salon, mercredi et jeudi formations, vendredi suivi pour me mettre à jour!"
+      },
+      {
+        "days": "2",
+        "visits": "8",
+        "appts": "10",
+        "deals": "1",
+        "notes": "This was 2 days with meeting on Tuesday and Easter on Monday"
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      }
+    ],
+    [
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": "Isaac on Monday, Promach on Tuesday, Philip on Wednesday, Didier on Thursday, and Anne on Friday."
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      }
+    ],
+    [
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      }
+    ],
+    [
+      {
+        "days": "3",
+        "visits": "3",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      },
+      {
+        "days": "",
+        "visits": "",
+        "appts": "",
+        "deals": "",
+        "notes": ""
+      }
+    ]
+  ]
+}
