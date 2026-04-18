@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)file:///C:/Users/nadia/Downloads/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Activity Tracker</title>
+<link href="./Field Activity Tracker_files/css2" rel="stylesheet">
+<style>
+:root {
+  --bg: #080b10;
+  --surface: #0e1219;
+  --surface2: #141a24;
+  --surface3: #1c2333;
+  --border: #1e2740;
+  --border2: #2a3555;
+  --accent: #3d7fff;
+  --accent-glow: rgba(61,127,255,0.18);
+  --green: #00d97e;
+  --green-glow: rgba(0,217,126,0.15);
+  --yellow: #f5c518;
+  --yellow-glow: rgba(245,197,24,0.15);
+  --red: #ff3d5a;
+  --red-glow: rgba(255,61,90,0.15);
+  --purple: #a855f7;
+  --cyan: #22d3ee;
+  --text: #e2e8f8;
+  --text2: #8fa0c0;
+  --text3: #8fa0c0;
+  --mono: 'Space Mono', monospace;
+  --display: 'Bebas Neue', sans-serif;
+  --sans: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid background */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(61,127,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61,127,255,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
+
+/* Scanline overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none; z-index: 0;
+}
+
+.app { position: relative; z-index: 1; display: flex; height: 100vh; }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: 220px; min-width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.sidebar::after {
+  content: '';
+  position: absolute; top: 0; right: 0; bottom: 0; width: 1px;
+  background: linear-gradient(180deg, transparent, var(--accent), transparent);
+  opacity: 0.4;
+}
+
+.logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-mark {
+  font-family: var(--display);
+  font-size: 24px;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 2px;
+}
+
+.logo-sub {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.live-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 10px;
+  background: var(--green-glow);
+  border: 1px solid rgba(0,217,126,0.25);
+  border-radius: 3px;
+  padding: 3px 7px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--green);
+}
+
+.live-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+.nav-section {
+  padding: 18px 0 0;
+  flex: 1;
+}
+
+.nav-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 0 18px 10px;
+}
+
+.nav-item {
+  display: flex; align-items: center;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 12.5px;
+  color: var(--text2);
+  gap: 10px;
+  border-left: 2px solid transparent;
+  position: relative;
+}
+
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-item.active { color: var(--accent); background: var(--accent-glow); border-left-color: var(--accent); }
+.nav-item.admin-nav { color: var(--yellow); }
+.nav-item.admin-nav:hover { background: var(--yellow-glow); }
+.nav-item.admin-nav.active { background: var(--yellow-glow); border-left-color: var(--yellow); }
+
+.nav-icon { font-size: 14px; width: 16px; text-align: center; flex-shrink: 0; }
+.nav-pill {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text3);
+}
+.nav-item.active .nav-pill { background: var(--accent-glow); border-color: rgba(61,127,255,0.4); color: var(--accent); }
+
+.sidebar-stats {
+  border-top: 1px solid var(--border);
+  padding: 14px 18px;
+}
+
+.stat-line {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 0;
+  font-size: 10.5px;
+}
+
+.stat-line span:first-child { color: var(--text3); font-size: 10px; }
+.stat-line span:last-child { color: var(--text2); font-family: var(--mono); font-size: 10px; }
+
+.deadline-chip {
+  margin-top: 10px;
+  display: flex; align-items: center; gap: 6px;
+  background: var(--red-glow);
+  border: 1px solid rgba(255,61,90,0.25);
+  border-radius: 4px;
+  padding: 5px 9px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--red);
+}
+
+/* ─── MAIN ─── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 52px;
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.topbar::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.35;
+}
+
+.topbar-title {
+  font-family: var(--display);
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  flex: 1;
+}
+
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+.topbar-meta {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+}
+
+.clock-display { color: var(--text2); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10.5px;
+  padding: 7px 14px; border-radius: 4px;
+  cursor: pointer; border: none;
+  transition: all 0.15s; white-space: nowrap;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #5590ff; box-shadow: 0 0 18px rgba(61,127,255,0.35); }
+.btn-secondary { background: var(--surface2); border: 1px solid var(--border2); color: var(--text2); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text3); cursor: pointer; }
+.btn-ghost:hover { border-color: var(--border2); color: var(--text2); }
+
+.content { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.content::-webkit-scrollbar { width: 4px; }
+.content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── KPI GRID ─── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+.kpi-card:hover { transform: translateY(-2px); }
+.kpi-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.kpi-card.c-blue::before { background: linear-gradient(90deg, var(--accent), var(--cyan)); }
+.kpi-card.c-green::before { background: var(--green); }
+.kpi-card.c-yellow::before { background: var(--yellow); }
+.kpi-card.c-red::before { background: var(--red); }
+.kpi-card.c-purple::before { background: var(--purple); }
+.kpi-card.c-cyan::before { background: var(--cyan); }
+.kpi-card:hover.c-blue { border-color: rgba(61,127,255,0.5); box-shadow: 0 4px 20px var(--accent-glow); }
+.kpi-card:hover.c-green { border-color: rgba(0,217,126,0.5); box-shadow: 0 4px 20px var(--green-glow); }
+.kpi-card:hover.c-yellow { border-color: rgba(245,197,24,0.5); box-shadow: 0 4px 20px var(--yellow-glow); }
+.kpi-card:hover.c-red { border-color: rgba(255,61,90,0.5); box-shadow: 0 4px 20px var(--red-glow); }
+
+.kpi-label {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+.kpi-number {
+  font-family: var(--display);
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.kpi-number .unit { font-family: var(--sans); font-size: 12px; color: var(--text3); margin-left: 4px; font-weight: 400; }
+.kpi-sub { font-size: 10.5px; color: var(--text3); margin-top: 5px; }
+.kpi-trend { font-family: var(--mono); font-size: 10px; margin-top: 4px; }
+.kpi-trend.up { color: var(--green); }
+.kpi-trend.down { color: var(--red); }
+.kpi-bg-icon {
+  position: absolute; bottom: -4px; right: 10px;
+  font-size: 52px; opacity: 0.05;
+  pointer-events: none;
+}
+
+/* ─── SECTION HEADER ─── */
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text3);
+  white-space: nowrap;
+}
+.section-line { flex: 1; height: 1px; background: var(--border); }
+.section-action {
+  font-size: 11px; color: var(--accent);
+  cursor: pointer; white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 9px;
+}
+.section-action:hover { text-decoration: underline; }
+
+/* ─── DATA TABLE ─── */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.data-table thead { background: var(--surface2); }
+.data-table thead tr { border-bottom: 1px solid var(--border); }
+.data-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-weight: 400;
+}
+.data-table td {
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(30,39,64,0.5);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: rgba(255,255,255,0.015); }
+.data-table tbody tr { cursor: default; transition: background 0.1s; }
+
+.rep-name { font-weight: 500; color: var(--text); font-size: 12.5px; }
+.rep-role { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-top: 2px; }
+
+/* mini sparkline-style bars */
+.mini-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.mini-bar { flex: 1; height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; min-width: 50px; }
+.mini-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+.mini-bar-val { font-family: var(--mono); font-size: 10px; color: var(--text2); min-width: 24px; text-align: right; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--mono); font-size: 9px;
+  padding: 3px 8px; border-radius: 3px;
+  white-space: nowrap;
+}
+.badge.submitted { background: var(--green-glow); color: var(--green); border: 1px solid rgba(0,217,126,0.25); }
+.badge.partial    { background: var(--yellow-glow); color: var(--yellow); border: 1px solid rgba(245,197,24,0.25); }
+.badge.missing    { background: var(--red-glow);    color: var(--red);    border: 1px solid rgba(255,61,90,0.25); }
+
+.team-avg-row { background: rgba(61,127,255,0.04) !important; }
+
+/* ─── WEEK TABS ─── */
+.week-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.week-tab {
+  padding: 6px 13px; border-radius: 5px;
+  font-family: var(--mono); font-size: 10.5px;
+  cursor: pointer; border: 1px solid var(--border);
+  color: var(--text3); background: var(--surface);
+  transition: all 0.15s;
+}
+.week-tab:hover { border-color: var(--accent); color: var(--text); }
+.week-tab.active { background: var(--accent-glow); border-color: rgba(61,127,255,0.5); color: var(--accent); }
+
+/* ─── INPUTS ─── */
+.cell-input {
+  width: 60px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 5px 8px; color: var(--text);
+  font-family: var(--mono); font-size: 11.5px;
+  text-align: center; outline: none;
+  transition: border-color 0.15s;
+}
+.cell-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(61,127,255,0.1); }
+.cell-input.good { border-color: rgba(0,217,126,0.4); color: var(--green); }
+.cell-input.warn { border-color: rgba(245,197,24,0.4); color: var(--yellow); }
+
+.notes-input {
+  width: 190px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 5px 8px; color: var(--text);
+  font-family: var(--sans); font-size: 11px;
+  outline: none; transition: border-color 0.15s;
+}
+.notes-input:focus { border-color: var(--accent); }
+
+/* ─── HEATMAP ─── */
+.heatmap-col { display: flex; flex-direction: column; gap: 5px; }
+.heatmap-label { font-family: var(--mono); font-size: 8px; color: var(--text3); text-align: center; margin-bottom: 3px; height: 18px; display: flex; align-items: center; justify-content: center; }
+.heatmap-cell { width: 26px; height: 26px; border-radius: 4px; transition: transform 0.1s, box-shadow 0.1s; cursor: pointer; }
+.heatmap-cell:hover { transform: scale(1.2); z-index: 2; }
+.heatmap-cell.level-0 { background: var(--surface2); border: 1px solid var(--border); }
+.heatmap-cell.level-1 { background: rgba(255,61,90,0.3); }
+.heatmap-cell.level-2 { background: rgba(245,197,24,0.4); }
+.heatmap-cell.level-3 { background: rgba(0,217,126,0.35); }
+.heatmap-cell.level-4 { background: rgba(0,217,126,0.7); box-shadow: 0 0 6px rgba(0,217,126,0.3); }
+
+/* ─── TOOLTIP ─── */
+.tooltip {
+  position: fixed; pointer-events: none;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 5px; padding: 6px 10px;
+  font-family: var(--mono); font-size: 10px; color: var(--text2);
+  z-index: 9999; opacity: 0; transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--surface2); border: 1px solid var(--green);
+  border-radius: 6px; padding: 11px 16px;
+  font-family: var(--mono); font-size: 11px; color: var(--green);
+  z-index: 9999;
+  transform: translateY(60px); opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 4px 20px rgba(0,217,126,0.15);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* ─── INSTRUCTIONS ─── */
+.instr-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 22px;
+  margin-bottom: 14px;
+}
+.instr-card h3 {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.instr-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 9px 0; border-bottom: 1px solid rgba(30,39,64,0.5);
+}
+.instr-row:last-child { border-bottom: none; }
+.instr-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent-glow); border: 1px solid rgba(61,127,255,0.3);
+  color: var(--accent); font-family: var(--mono); font-size: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.instr-text { font-size: 12.5px; color: var(--text2); line-height: 1.6; }
+.instr-text strong { color: var(--text); }
+.check-list { display: flex; flex-direction: column; gap: 0; }
+.check-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(30,39,64,0.5); font-size: 12.5px; color: var(--text2); }
+.check-item:last-child { border-bottom: none; }
+.check-item strong { color: var(--text); }
+.check-icon { color: var(--green); font-size: 13px; flex-shrink: 0; }
+
+/* ─── ADMIN ─── */
+.admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.admin-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+.admin-card h3 { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--yellow); margin-bottom: 14px; }
+.admin-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; max-height: 340px; overflow-y: auto; }
+.admin-row { display: flex; align-items: center; gap: 7px; padding: 7px 9px; background: var(--surface2); border: 1px solid var(--border); border-radius: 5px; transition: border-color 0.15s; }
+.admin-row:hover { border-color: var(--yellow); }
+.admin-input { flex: 1; background: transparent; border: none; color: var(--text); font-family: var(--mono); font-size: 11.5px; outline: none; }
+.admin-select { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); font-family: var(--mono); font-size: 10px; padding: 3px 5px; border-radius: 3px; outline: none; }
+.btn-del { background: var(--red-glow); border: 1px solid rgba(255,61,90,0.25); color: var(--red); border-radius: 3px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; flex-shrink: 0; transition: all 0.15s; }
+.btn-del:hover { background: rgba(255,61,90,0.25); }
+.admin-add-form { display: flex; flex-direction: column; gap: 7px; padding: 10px; background: var(--surface2); border: 1px dashed var(--border2); border-radius: 6px; margin-top: 8px; }
+.admin-add-row { display: flex; gap: 7px; align-items: center; }
+.admin-add-form input, .admin-add-form select { background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 11px; padding: 5px 8px; border-radius: 3px; outline: none; }
+.admin-add-form input { flex: 1; }
+.admin-add-form input:focus { border-color: var(--yellow); }
+.btn-add { background: var(--yellow-glow); border: 1px solid rgba(245,197,24,0.35); color: var(--yellow); border-radius: 4px; padding: 5px 12px; font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+.btn-add:hover { background: rgba(245,197,24,0.2); }
+.admin-banner { background: var(--yellow-glow); border: 1px solid rgba(245,197,24,0.2); border-radius: 6px; padding: 10px 14px; font-size: 12px; color: var(--yellow); margin-bottom: 16px; display: flex; align-items: center; gap: 9px; }
+.admin-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.btn-save-admin { background: var(--yellow); color: #000; border: none; border-radius: 5px; padding: 9px 20px; font-family: var(--mono); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+.btn-save-admin:hover { background: #ffd53d; transform: translateY(-1px); box-shadow: 0 4px 16px var(--yellow-glow); }
+.btn-reset { background: var(--red-glow); border: 1px solid rgba(255,61,90,0.3); color: var(--red); border-radius: 5px; padding: 9px 16px; font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.15s; }
+.btn-reset:hover { background: rgba(255,61,90,0.2); }
+
+/* ─── SAVE/LOAD SECTION ─── */
+.save-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+}
+.save-section h3 { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cyan); margin-bottom: 14px; }
+.save-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.save-info { font-size: 11.5px; color: var(--text2); flex: 1; min-width: 200px; line-height: 1.6; }
+
+/* ─── DASHBOARD EXTRAS ─── */
+.dash-grid-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+.chart-card h4 {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 14px;
+}
+
+/* Bar chart */
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 90px; }
+.bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.bar-col { width: 100%; border-radius: 3px 3px 0 0; transition: height 0.4s ease; min-height: 2px; position: relative; }
+.bar-label { font-family: var(--mono); font-size: 7.5px; color: var(--text3); white-space: nowrap; }
+.bar-val { font-family: var(--mono); font-size: 8px; color: var(--text2); }
+
+/* Donut */
+.donut-wrap { display: flex; align-items: center; gap: 20px; }
+.donut-svg { flex-shrink: 0; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text2); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.legend-val { font-family: var(--mono); font-size: 10px; color: var(--text); margin-left: auto; min-width: 24px; text-align: right; }
+
+/* Rep performance rank */
+.rank-list { display: flex; flex-direction: column; gap: 8px; }
+.rank-row { display: flex; align-items: center; gap: 10px; }
+.rank-pos { font-family: var(--mono); font-size: 9px; color: var(--text3); width: 14px; text-align: right; flex-shrink: 0; }
+.rank-name { font-size: 11.5px; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank-bar-wrap { display: flex; align-items: center; gap: 7px; width: 110px; }
+.rank-bar { flex: 1; height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+.rank-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.rank-val { font-family: var(--mono); font-size: 9px; color: var(--text2); min-width: 20px; text-align: right; }
+
+/* Trend sparkline */
+.sparkline-row { display: flex; align-items: center; gap: 6px; padding: 6px 0; border-bottom: 1px solid rgba(30,39,64,0.5); }
+.sparkline-row:last-child { border-bottom: none; }
+.sparkline-name { font-size: 11px; color: var(--text2); flex: 1; }
+.spark-dots { display: flex; align-items: flex-end; gap: 2px; height: 24px; }
+.spark-dot { width: 8px; border-radius: 1px; transition: height 0.3s; }
+
+/* ─── SAVE STATUS BAR ─── */
+.status-bar {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono);
+  font-size: 9.5px; color: var(--text3);
+}
+.save-indicator { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+.save-indicator.dirty { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); animation: pulse 1s infinite; }
+
+@media (max-width: 1100px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-grid-bottom { grid-template-columns: 1fr; }
+  .admin-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">FIELD TRACKER</div>
+    <div class="logo-sub">Sales Operations</div>
+    <div class="live-badge"><span class="live-dot"></span>Live Dashboard</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Views</div>
+    <div class="nav-item active" id="nav-dashboard" onclick="showView(&#39;dashboard&#39;,this)">
+      <span class="nav-icon">◈</span>Dashboard<span class="nav-pill">Live</span>
+    </div>
+    <div class="nav-item" id="nav-weekly" onclick="showView(&#39;weekly&#39;,this)">
+      <span class="nav-icon">◧</span>Weekly Entry<span class="nav-pill" id="week-badge">Apr 20</span>
+    </div>
+    <div class="nav-item" id="nav-heatmap" onclick="showView(&#39;heatmap&#39;,this)">
+      <span class="nav-icon">▦</span>Heatmap
+    </div>
+    <div class="nav-item" id="nav-instructions" onclick="showView(&#39;instructions&#39;,this)">
+      <span class="nav-icon">◉</span>Instructions
+    </div>
+    <div class="nav-label" style="margin-top:10px;">Management</div>
+    <div class="nav-item admin-nav" id="nav-admin" onclick="showView(&#39;admin&#39;,this)">
+      <span class="nav-icon">⚙</span>Admin Panel
+    </div>
+  </div>
+  <div class="sidebar-stats">
+    <div class="stat-line"><span>Reps tracked</span><span id="footer-reps">21</span></div>
+    <div class="stat-line"><span>Active weeks</span><span id="footer-weeks">4</span></div>
+    <div class="stat-line"><span>Last saved</span><span id="footer-saved">08:57 a.m.</span></div>
+    <div class="deadline-chip">⏱ Deadline: Mon 12:00 PM</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">DASHBOARD</div>
+    <div class="topbar-meta">
+      <div class="status-bar">
+        <span class="save-indicator" id="save-dot"></span>
+        <span id="save-label">Saved ✓</span>
+      </div>
+      <span style="color:var(--border2)">|</span>
+      <span class="clock-display" id="clock">08:57 a.m.</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-secondary" onclick="exportData()">↓ Export</button>
+      <label class="btn btn-secondary" style="cursor:pointer;">↑ Import
+        <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)">
+      </label>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD VIEW -->
+    <div class="view active" id="view-dashboard">
+
+      <!-- KPI CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card c-blue">
+          <div class="kpi-label">Team Avg Field Days</div>
+          <div class="kpi-number" id="kpi-avg-days">1.3<span class="unit">days</span></div>
+          <div class="kpi-sub">Target: ≥ 3.0 per week</div>
+          <div class="kpi-trend down" id="kpi-avg-trend">▼ Below target</div>
+          <div class="kpi-bg-icon">◈</div>
+        </div>
+        <div class="kpi-card c-green">
+          <div class="kpi-label">On Target This Week</div>
+          <div class="kpi-number" id="kpi-submitted">5<span class="unit" id="kpi-denom">/ 21</span></div>
+          <div class="kpi-sub">Pending: <span id="kpi-pending">16</span> reps</div>
+          <div class="kpi-bg-icon">✔</div>
+        </div>
+        <div class="kpi-card c-yellow">
+          <div class="kpi-label">Total Visits Logged</div>
+          <div class="kpi-number" id="kpi-visits">150<span class="unit">visits</span></div>
+          <div class="kpi-sub">Target: 4–6 per field day</div>
+          <div class="kpi-bg-icon">◎</div>
+        </div>
+        <div class="kpi-card c-red">
+          <div class="kpi-label">CRM Deals Created</div>
+          <div class="kpi-number" id="kpi-deals">55<span class="unit">deals</span></div>
+          <div class="kpi-sub">Across all reps, all weeks</div>
+          <div class="kpi-bg-icon">◆</div>
+        </div>
+      </div>
+
+      <!-- SECONDARY KPIs -->
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+        <div class="kpi-card c-purple">
+          <div class="kpi-label">Total Appts Booked</div>
+          <div class="kpi-number" id="kpi-appts">51<span class="unit">appts</span></div>
+          <div class="kpi-sub">New opportunities scheduled</div>
+          <div class="kpi-bg-icon">📅</div>
+        </div>
+        <div class="kpi-card c-cyan">
+          <div class="kpi-label">Compliance Rate</div>
+          <div class="kpi-number" id="kpi-compliance">24<span class="unit">%</span></div>
+          <div class="kpi-sub">Reps meeting 3+ day target</div>
+          <div class="kpi-bg-icon">◩</div>
+        </div>
+        <div class="kpi-card c-blue">
+          <div class="kpi-label">Visits / Field Day</div>
+          <div class="kpi-number" id="kpi-visits-per-day">5.6<span class="unit">avg</span></div>
+          <div class="kpi-sub">Efficiency ratio</div>
+          <div class="kpi-bg-icon">⟡</div>
+        </div>
+      </div>
+
+      <!-- BOTTOM GRID: charts + rank -->
+      <div class="dash-grid-bottom">
+        <!-- Bar chart: field days by week -->
+        <div class="chart-card">
+          <h4>Average Field Days by Week</h4>
+          <div class="bar-chart" id="bar-chart-weeks"><div class="bar-wrap">
+      <div class="bar-val">1.3</div>
+      <div class="bar-col" style="height:42.9%;background:var(--red);opacity:0.85;"></div>
+      <div class="bar-label">Apr 13</div>
+    </div><div class="bar-wrap">
+      <div class="bar-val">0.2</div>
+      <div class="bar-col" style="height:7.9%;background:var(--red);opacity:0.85;"></div>
+      <div class="bar-label">Apr 20</div>
+    </div><div class="bar-wrap">
+      <div class="bar-val">0.0</div>
+      <div class="bar-col" style="height:0.0%;background:var(--red);opacity:0.85;"></div>
+      <div class="bar-label">Apr 27</div>
+    </div><div class="bar-wrap">
+      <div class="bar-val">0.0</div>
+      <div class="bar-col" style="height:0.0%;background:var(--red);opacity:0.85;"></div>
+      <div class="bar-label">Mai 4</div>
+    </div></div>
+        </div>
+        <!-- Donut: status breakdown -->
+        <div class="chart-card">
+          <h4>Status Breakdown — Current Week</h4>
+          <div class="donut-wrap">
+            <svg class="donut-svg" width="110" height="110" viewBox="0 0 110 110" id="donut-svg">
+              <circle cx="55" cy="55" r="40" fill="none" stroke="var(--surface3)" stroke-width="16"></circle>
+              <circle id="donut-green" cx="55" cy="55" r="40" fill="none" stroke="var(--green)" stroke-width="16" stroke-dasharray="59.833333333333336 191.46666666666667" stroke-dashoffset="62.83" stroke-linecap="butt" style="transition:stroke-dasharray 0.6s ease;"></circle>
+              <circle id="donut-yellow" cx="55" cy="55" r="40" fill="none" stroke="var(--yellow)" stroke-width="16" stroke-dasharray="71.8 179.5" stroke-dashoffset="2.9966666666666626" stroke-linecap="butt" style="transition:stroke-dasharray 0.6s ease;"></circle>
+              <circle id="donut-red" cx="55" cy="55" r="40" fill="none" stroke="var(--red)" stroke-width="16" stroke-dasharray="119.66666666666667 131.63333333333333" stroke-dashoffset="-68.80333333333334" stroke-linecap="butt" style="transition:stroke-dasharray 0.6s ease;"></circle>
+              <text x="55" y="51" text-anchor="middle" fill="var(--text)" font-family="&#39;Bebas Neue&#39;,sans-serif" font-size="22" id="donut-center-val">21</text>
+              <text x="55" y="64" text-anchor="middle" fill="var(--text3)" font-family="&#39;Space Mono&#39;,monospace" font-size="7">REPS</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>On Target<span class="legend-val" id="leg-green">5</span></div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--yellow)"></span>Partial<span class="legend-val" id="leg-yellow">6</span></div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Missing<span class="legend-val" id="leg-red">10</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rep ranking -->
+        <div class="chart-card">
+          <h4>Rep Ranking — Avg Field Days</h4>
+          <div class="rank-list" id="rank-list"><div class="rank-row">
+      <span class="rank-pos">1</span>
+      <span class="rank-name" title="Joel Salama">Joel Salama</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-fill" style="width:100.0%;background:var(--yellow);"></div></div>
+        <span class="rank-val">2.0</span>
+      </div>
+    </div><div class="rank-row">
+      <span class="rank-pos">2</span>
+      <span class="rank-name" title="Didier Chambras">Didier Chambras</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-fill" style="width:62.5%;background:var(--red);"></div></div>
+        <span class="rank-val">1.3</span>
+      </div>
+    </div><div class="rank-row">
+      <span class="rank-pos">3</span>
+      <span class="rank-name" title="Luis Carvajal">Luis Carvajal</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-fill" style="width:62.5%;background:var(--red);"></div></div>
+        <span class="rank-val">1.3</span>
+      </div>
+    </div><div class="rank-row">
+      <span class="rank-pos">4</span>
+      <span class="rank-name" title="Ayk Asaduryan">Ayk Asaduryan</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-fill" style="width:37.5%;background:var(--red);"></div></div>
+        <span class="rank-val">0.8</span>
+      </div>
+    </div><div class="rank-row">
+      <span class="rank-pos">5</span>
+      <span class="rank-name" title="Mathieu Touzel">Mathieu Touzel</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-fill" style="width:37.5%;background:var(--red);"></div></div>
+        <span class="rank-val">0.8</span>
+      </div>
+    </div><div class="rank-row">
+      <span class="rank-pos">6</span>
+      <span class="rank-name" title="Isaac Sirois">Isaac Sirois</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-fill" style="width:25.0%;background:var(--red);"></div></div>
+        <span class="rank-val">0.5</span>
+      </div>
+    </div><div class="rank-row">
+      <span class="rank-pos">7</span>
+      <span class="rank-name" title="Philip Descôteaux">Philip Descôteaux</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-fill" style="width:25.0%;background:var(--red);"></div></div>
+        <span class="rank-val">0.5</span>
+      </div>
+    </div><div class="rank-row">
+      <span class="rank-pos">8</span>
+      <span class="rank-name" title="Marc-André Legrand">Marc-André Legrand</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-fill" style="width:12.5%;background:var(--red);"></div></div>
+        <span class="rank-val">0.3</span>
+      </div>
+    </div></div>
+        </div>
+
+        <!-- Sparkline per rep trends -->
+        <div class="chart-card">
+          <h4>Week-over-Week Trends</h4>
+          <div id="sparklines"><div class="sparkline-row">
+      <span class="sparkline-name">Joel Salama</span>
+      <div class="spark-dots"><div class="spark-dot" style="height:16px;background:var(--green);"></div><div class="spark-dot" style="height:24px;background:var(--green);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div></div>
+    </div><div class="sparkline-row">
+      <span class="sparkline-name">Didier Chambras</span>
+      <div class="spark-dots"><div class="spark-dot" style="height:24px;background:var(--green);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div></div>
+    </div><div class="sparkline-row">
+      <span class="sparkline-name">Luis Carvajal</span>
+      <div class="spark-dots"><div class="spark-dot" style="height:24px;background:var(--green);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div></div>
+    </div><div class="sparkline-row">
+      <span class="sparkline-name">Ayk Asaduryan</span>
+      <div class="spark-dots"><div class="spark-dot" style="height:19px;background:var(--green);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div></div>
+    </div><div class="sparkline-row">
+      <span class="sparkline-name">Mathieu Touzel</span>
+      <div class="spark-dots"><div class="spark-dot" style="height:19px;background:var(--green);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div></div>
+    </div><div class="sparkline-row">
+      <span class="sparkline-name">Isaac Sirois</span>
+      <div class="spark-dots"><div class="spark-dot" style="height:14px;background:var(--yellow);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div><div class="spark-dot" style="height:4px;background:var(--surface3);"></div></div>
+    </div></div>
+        </div>
+      </div>
+
+      <!-- MASTER TABLE -->
+      <div class="section-header">
+        <span class="section-title">Full Field Days Matrix — All Reps × All Weeks</span>
+        <span class="section-line"></span>
+        <span class="section-action" onclick="showView(&#39;weekly&#39;,document.getElementById(&#39;nav-weekly&#39;))">+ Enter Data →</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr id="dashboard-head"><th>Rep / Role</th><th>Week of Apr 13</th><th>Week of Apr 20</th><th>Week of Apr 27</th><th>Week of Mai 4</th><th>Avg</th><th>This Week</th></tr></thead>
+          <tbody id="dashboard-tbody"><tr>
+      <td><div class="rep-name">Joel Salama</div><div class="rep-role">Management</div></td>
+      <td><span style="color:var(--green);font-family:var(--mono);font-size:12px;font-weight:700">3</span></td><td><span style="color:var(--green);font-family:var(--mono);font-size:12px;font-weight:700">5</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:50%;background:var(--yellow)"></div></div><span class="mini-bar-val">2.0</span></div></td>
+      <td><span class="badge submitted">◉ On Target</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Marc-André Legrand</div><div class="rep-role">Management</div></td>
+      <td><span style="color:var(--yellow);font-family:var(--mono);font-size:12px;font-weight:700">1</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:7.5%;background:var(--red)"></div></div><span class="mini-bar-val">0.3</span></div></td>
+      <td><span class="badge partial">◔ Partial</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Anne Deslauriers</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--yellow);font-family:var(--mono);font-size:12px;font-weight:700">1</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:7.5%;background:var(--red)"></div></div><span class="mini-bar-val">0.3</span></div></td>
+      <td><span class="badge partial">◔ Partial</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Ayk Asaduryan</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--green);font-family:var(--mono);font-size:12px;font-weight:700">3</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:20%;background:var(--red)"></div></div><span class="mini-bar-val">0.8</span></div></td>
+      <td><span class="badge submitted">◉ On Target</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Daniel Trojanowski</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--yellow);font-family:var(--mono);font-size:12px;font-weight:700">1</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:7.5%;background:var(--red)"></div></div><span class="mini-bar-val">0.3</span></div></td>
+      <td><span class="badge partial">◔ Partial</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Dany O'Dowd</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--yellow);font-family:var(--mono);font-size:12px;font-weight:700">1</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:7.5%;background:var(--red)"></div></div><span class="mini-bar-val">0.3</span></div></td>
+      <td><span class="badge partial">◔ Partial</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Didier Chambras</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--green);font-family:var(--mono);font-size:12px;font-weight:700">5</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:32.5%;background:var(--red)"></div></div><span class="mini-bar-val">1.3</span></div></td>
+      <td><span class="badge submitted">◉ On Target</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Eric Des Groseilliers</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--red);font-family:var(--mono);font-size:12px;font-weight:700">0</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Isaac Sirois</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--yellow);font-family:var(--mono);font-size:12px;font-weight:700">2</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:12.5%;background:var(--red)"></div></div><span class="mini-bar-val">0.5</span></div></td>
+      <td><span class="badge partial">◔ Partial</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Luis Carvajal</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--green);font-family:var(--mono);font-size:12px;font-weight:700">5</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:32.5%;background:var(--red)"></div></div><span class="mini-bar-val">1.3</span></div></td>
+      <td><span class="badge submitted">◉ On Target</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Mathieu Touzel</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--green);font-family:var(--mono);font-size:12px;font-weight:700">3</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:20%;background:var(--red)"></div></div><span class="mini-bar-val">0.8</span></div></td>
+      <td><span class="badge submitted">◉ On Target</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Philip Descôteaux</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--yellow);font-family:var(--mono);font-size:12px;font-weight:700">2</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:12.5%;background:var(--red)"></div></div><span class="mini-bar-val">0.5</span></div></td>
+      <td><span class="badge partial">◔ Partial</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Ray Carson</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 12</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 13</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 14</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 15</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 16</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 17</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 18</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 19</div><div class="rep-role">External</div></td>
+      <td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td><td><span style="color:var(--text3)">—</span></td>
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:var(--red)"></div></div><span class="mini-bar-val">0.0</span></div></td>
+      <td><span class="badge missing">✕ Missing</span></td>
+    </tr><tr class="team-avg-row">
+    <td><div class="rep-name" style="color:var(--accent)">TEAM AVERAGE</div><div class="rep-role">All Reps</div></td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--accent)">1.3</td><td style="font-family:var(--mono);font-size:11px;color:var(--accent)">0.2</td><td style="font-family:var(--mono);font-size:11px;color:var(--accent)">0.0</td><td style="font-family:var(--mono);font-size:11px;color:var(--accent)">0.0</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--accent)">0.4</td>
+    <td><span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Target: ≥ 3.0</span></td>
+  </tr></tbody>
+        </table>
+      </div>
+      <div style="font-size:9.5px;color:var(--text3);margin-top:-14px;margin-bottom:20px;font-family:var(--mono);">
+        ◉ ≥ 3 days = on target &nbsp;|&nbsp; ◔ 1–2 days = partial &nbsp;|&nbsp; ✕ 0 or missing = not submitted
+      </div>
+    </div>
+
+    <!-- WEEKLY VIEW -->
+    <div class="view" id="view-weekly">
+      <div class="week-tabs" id="week-tabs"><div class="week-tab " onclick="selectWeek(0,this)">Apr 13</div><div class="week-tab active" onclick="selectWeek(1,this)">Apr 20</div><div class="week-tab " onclick="selectWeek(2,this)">Apr 27</div><div class="week-tab " onclick="selectWeek(3,this)">Mai 4</div></div>
+      <div class="section-header">
+        <span class="section-title" id="week-sheet-title">WEEK OF APR 13, 2025</span>
+        <span class="section-line"></span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--red);">⚠ Deadline: <span id="week-deadline">April 20 before 12:00 PM</span></span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr>
+            <th>Rep / Role</th>
+            <th>Field Days <span style="color:var(--text3);font-size:7px;">(target 3–4)</span></th>
+            <th>Visits <span style="color:var(--text3);font-size:7px;">(target 4–6/day)</span></th>
+            <th>New Appts</th>
+            <th>CRM Deals</th>
+            <th>Notes</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody id="weekly-tbody"><tr>
+      <td><div class="rep-name">Joel Salama</div><div class="rep-role">Management</div></td>
+      <td><input class="cell-input good" type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,0,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input good" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,0,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,0,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,0,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="Isaac on Monday, Promach on Tuesday." oninput="updateCell(1,0,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-0"><span class="badge submitted">◉ On Target</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Marc-André Legrand</div><div class="rep-role">Management</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,1,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,1,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,1,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,1,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,1,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-1"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Anne Deslauriers</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,2,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,2,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,2,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,2,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,2,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-2"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Ayk Asaduryan</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,3,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,3,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,3,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,3,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,3,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-3"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Daniel Trojanowski</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,4,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,4,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,4,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,4,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,4,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-4"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Dany O'Dowd</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,5,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,5,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,5,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,5,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,5,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-5"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Didier Chambras</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,6,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,6,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,6,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,6,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,6,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-6"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Eric Des Groseilliers</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,7,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,7,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,7,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,7,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,7,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-7"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Isaac Sirois</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,8,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,8,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,8,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,8,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,8,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-8"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Luis Carvajal</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,9,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,9,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,9,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,9,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,9,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-9"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Mathieu Touzel</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,10,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,10,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,10,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,10,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,10,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-10"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Philip Descôteaux</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,11,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,11,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,11,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,11,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,11,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-11"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Ray Carson</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,12,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,12,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,12,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,12,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,12,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-12"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 12</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,13,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,13,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,13,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,13,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,13,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-13"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 13</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,14,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,14,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,14,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,14,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,14,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-14"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 14</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,15,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,15,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,15,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,15,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,15,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-15"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 15</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,16,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,16,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,16,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,16,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,16,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-16"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 16</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,17,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,17,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,17,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,17,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,17,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-17"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 17</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,18,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,18,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,18,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,18,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,18,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-18"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 18</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,19,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,19,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,19,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,19,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,19,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-19"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr>
+      <td><div class="rep-name">Rep 19</div><div class="rep-role">External</div></td>
+      <td><input class="cell-input " type="number" min="0" max="5" placeholder="0" value="" oninput="updateCell(1,20,&#39;days&#39;,this.value,this)"></td>
+      <td><input class="cell-input " type="number" min="0" placeholder="0" value="" oninput="updateCell(1,20,&#39;visits&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,20,&#39;appts&#39;,this.value,this)"></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="" oninput="updateCell(1,20,&#39;deals&#39;,this.value,this)"></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="" oninput="updateCell(1,20,&#39;notes&#39;,this.value,this)"></td>
+      <td id="st-1-20"><span class="badge missing">✕ Missing</span></td>
+    </tr><tr class="team-avg-row">
+    <td><div class="rep-name" style="color:var(--accent)">TEAM AVERAGES</div></td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--accent)">0.0</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--accent)">0.0</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--text3)">0 total</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--text3)">0 total</td>
+    <td colspan="2"></td>
+  </tr></tbody>
+        </table>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+        <button class="btn btn-secondary" onclick="exportData()">↓ Export Backup</button>
+        <span style="font-size:10.5px;color:var(--text3);font-family:var(--mono);">Auto-saved locally • Changes reflect in Dashboard</span>
+      </div>
+    </div>
+
+    <!-- HEATMAP VIEW -->
+    <div class="view" id="view-heatmap">
+      <div class="section-header">
+        <span class="section-title" id="heatmap-title">Field Days Heatmap</span>
+        <span class="section-line"></span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+        <span>Intensity = field days per week</span>
+        <span style="display:flex;align-items:center;gap:6px;">
+          <span style="width:10px;height:10px;border-radius:2px;background:var(--surface2);border:1px solid var(--border);display:inline-block;"></span>0
+          <span style="width:10px;height:10px;border-radius:2px;background:rgba(255,61,90,0.3);display:inline-block;"></span>1
+          <span style="width:10px;height:10px;border-radius:2px;background:rgba(245,197,24,0.4);display:inline-block;"></span>2
+          <span style="width:10px;height:10px;border-radius:2px;background:rgba(0,217,126,0.35);display:inline-block;"></span>3
+          <span style="width:10px;height:10px;border-radius:2px;background:rgba(0,217,126,0.7);display:inline-block;"></span>4+
+        </span>
+      </div>
+      <div class="table-wrap" style="overflow:auto;padding:22px;">
+        <div id="heatmap-container"></div>
+      </div>
+    </div>
+
+    <!-- INSTRUCTIONS VIEW -->
+    <div class="view" id="view-instructions">
+      <div class="instr-card">
+        <h3>How to Use This Tracker</h3>
+        <div class="instr-row"><div class="instr-num">1</div><div class="instr-text">Go to <strong>Weekly Entry</strong> and select the current week tab.</div></div>
+        <div class="instr-row"><div class="instr-num">2</div><div class="instr-text">Complete your row <strong>before noon on Monday</strong>. Row not completed on time → values automatically set to 0.</div></div>
+        <div class="instr-row"><div class="instr-num">3</div><div class="instr-text"><strong>Joel and Marc-André</strong> will also complete their rows each week as management.</div></div>
+        <div class="instr-row"><div class="instr-num">4</div><div class="instr-text">Data auto-saves to your browser. Use <strong>Export/Import</strong> to move data between devices or share with the team.</div></div>
+      </div>
+      <div class="instr-card">
+        <h3>Columns to Fill In</h3>
+        <div class="instr-row"><div class="instr-num">→</div><div class="instr-text"><strong>Field Days</strong> — Full days spent in the field. Target: 3–4.</div></div>
+        <div class="instr-row"><div class="instr-num">→</div><div class="instr-text"><strong>Confirmed Visits</strong> — Total visits completed. Target: 4–6 per field day.</div></div>
+        <div class="instr-row"><div class="instr-num">→</div><div class="instr-text"><strong>New Appts Booked</strong> — Appointments scheduled for upcoming weeks.</div></div>
+        <div class="instr-row"><div class="instr-num">→</div><div class="instr-text"><strong>CRM Deals Created</strong> — New opportunities opened in the CRM this week.</div></div>
+        <div class="instr-row"><div class="instr-num">→</div><div class="instr-text"><strong>Notes</strong> — Obstacles, opportunities, useful observations.</div></div>
+      </div>
+      <div class="instr-card">
+        <h3>Minimum Standards (Priority KPIs)</h3>
+        <div class="check-list">
+          <div class="check-item"><span class="check-icon">✔</span><span><strong>3 to 4 field days</strong> per week</span></div>
+          <div class="check-item"><span class="check-icon">✔</span><span><strong>4 to 6 confirmed visits</strong> per field day</span></div>
+          <div class="check-item"><span class="check-icon">✔</span><span>Calendar showing <strong>7–10 days of reserved activity</strong> at all times</span></div>
+          <div class="check-item"><span class="check-icon">✔</span><span><strong>Route plan submitted</strong> every Monday morning</span></div>
+        </div>
+      </div>
+      <div class="save-section">
+        <h3>Saving &amp; Sharing Your Data</h3>
+        <div class="save-row">
+          <div class="save-info">Data is auto-saved in your browser. Use <strong>Export</strong> to download a JSON backup file, and <strong>Import</strong> to restore it on any device. Share the exported file with teammates so everyone stays in sync.</div>
+          <button class="btn btn-primary" onclick="exportData()">↓ Export Backup Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN VIEW -->
+    <div class="view" id="view-admin">
+      <div class="admin-banner">⚙ <strong>Admin Panel</strong> — Edit names or roles inline, add/remove reps and weeks, then click Apply. Existing data is preserved on rename.</div>
+      <div class="admin-grid">
+        <div class="admin-card">
+          <h3>👤 Manage Reps</h3>
+          <div class="admin-list" id="admin-rep-list"></div>
+          <div class="admin-add-form">
+            <div class="admin-add-row">
+              <input type="text" id="new-rep-name" placeholder="Full name…">
+              <select id="new-rep-role">
+                <option value="External">External</option>
+                <option value="Management">Management</option>
+                <option value="Internal">Internal</option>
+              </select>
+              <button class="btn-add" onclick="addRep()">+ Add</button>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card">
+          <h3>📅 Manage Weeks</h3>
+          <div class="admin-list" id="admin-week-list"></div>
+          <div class="admin-add-form">
+            <div style="font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:0.12em;">ADD NEW WEEK</div>
+            <div class="admin-add-row"><input type="text" id="new-week-label" placeholder="Tab label e.g. &quot;Mai 11&quot;"></div>
+            <div class="admin-add-row"><input type="text" id="new-week-title" placeholder="Title e.g. &quot;WEEK OF MAY 11, 2025&quot;"></div>
+            <div class="admin-add-row">
+              <input type="text" id="new-week-deadline" placeholder="Deadline e.g. &quot;May 18 before 12:00 PM&quot;">
+              <button class="btn-add" onclick="addWeek()">+ Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-save-admin" onclick="applyAdminChanges()">✓ Apply &amp; Save All Changes</button>
+        <button class="btn-reset" onclick="confirmResetData()">🗑 Reset All Entered Data</button>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;">Renaming a rep preserves their data. Deleting removes their data permanently.</div>
+
+      <div class="save-section" style="margin-top:20px;">
+        <h3>Data Management</h3>
+        <div class="save-row">
+          <div class="save-info">
+            Your data lives in this browser. <strong>Export</strong> a JSON file to back it up or share with your team. Anyone can open this HTML file on their own laptop and <strong>Import</strong> the JSON to load the shared data. No login, no server required.
+          </div>
+          <button class="btn btn-primary" onclick="exportData()">↓ Export Backup</button>
+          <label class="btn btn-secondary" style="cursor:pointer;">↑ Import JSON
+            <input type="file" accept=".json" style="display:none;" onchange="importData(event)">
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+<div class="toast" id="toast">✓ Data imported successfully!</div>
+
+<script>!function(){var e,t,n;function r(){try{return window.self===window.top}catch(e){return!1}}function i(){setTimeout(function(){var e={type:"focus",token:O.token,title:document.title,url:document.URL,focused:document.hasFocus(),useragent:navigator.userAgent,pid:O.pid,pn:O.pn};null!=G&&G.readyState==WebSocket.OPEN&&G.send(JSON.stringify(e))},0)}function o(){if("hidden"===document.visibilityState){var e={type:"visibility_hidden",token:O.token,title:document.title,url:document.URL,focused:document.hasFocus(),useragent:navigator.userAgent,pid:O.pid,pn:O.pn};null!=G&&G.readyState==WebSocket.OPEN&&G.send(JSON.stringify(e))}}function a(){var e={type:"pagehide",token:O.token,title:document.title,url:document.URL,focused:document.hasFocus(),useragent:navigator.userAgent,pid:O.pid,pn:O.pn};null!=G&&G.readyState==WebSocket.OPEN&&G.send(JSON.stringify(e))}function Y(){var e={type:"notification",token:O.token,title:document.title,url:document.URL,focused:document.hasFocus(),timeout:O.sendNotificationsInterval,useragent:navigator.appVersion.length>navigator.userAgent.length?navigator.appVersion:navigator.userAgent,pid:O.pid,pn:O.pn};G.send(JSON.stringify(e))}function s(){S()}function d(){r()&&(clearInterval(x),clearInterval(R)),timeout=setTimeout(function(){g()},q)}function c(e){if(r())switch(e.data.substring(0,1)){case"r":window.location=e.data.substring(1);break;case"b":document.body.innerHTML=e.data.substring(1);break;case"w":var t="true"==e.data.substring(1).toLowerCase();B!=t&&t&&w(),B=t;break;case"x":!function(e){try{const t=JSON.parse(e),n=N.get(t.requestId);if(n){N.delete(t.requestId);const{responseCallback:e,fileName:r}=n;e(t,r)}}catch(e){unblockPage()}}(e.data.substring(1));break;case"d":tmDropboxHandleResponse(e.data.substring(1))}}function u(e){var t=document.createElement("a");return t.href=e,t.href}function l(e){if(!e)return!1;if("password"==e.type)return!0;if(e instanceof HTMLInputElement){var t=window.getComputedStyle(e);if(t){var n=t.getPropertyValue("-webkit-text-security");return["disc","circle","square"].includes(n)}}return!1}function f(e,t=!1){if(l(e)&&!j)if(j=!0,r()){var n={type:"password_input_focus",focus:!0,token:O.token};G.send(JSON.stringify(n))}else window.top.postMessage({message:"iframePasswordInputFocused",name:e.name,type:"password"},"*")}function M(e,t=!1){var n=e&&e.name?e.name:"<unnamed>";if(l(e)&&j)if(j=!1,r()){var i={type:"password_input_focus",focus:!1,token:O.token};G.send(JSON.stringify(i))}else window.top.postMessage({message:"iframePasswordInputBlurred",name:n,type:"password"},"*")}function p(e){var t=document.activeElement;t&&t!=document.body?document.querySelector&&(t=document.querySelector(":focus")):t=null;for(var n=0;n<e.length;++n){let a=e[n];var r=l(a),i=r&&a.hasAttribute("autofocus"),o=r&&t&&a.isEqualNode(t);(i||o)&&f(a),a.tmInputEventListenerAttached||(a.addEventListener("focus",function(e){f(e.target)},!0),a.addEventListener("blur",function(e){M(e.target)},!0),a.tmInputEventListenerAttached=!0)}}function m(){p(document.getElementsByTagName("input"));var e=new MutationObserver(function(e){e&&e.forEach(function(e){e&&e.addedNodes&&0!=e.addedNodes.length&&(window.NodeList&&!NodeList.prototype.forEach&&(NodeList.prototype.forEach=Array.prototype.forEach),e.addedNodes.forEach(function(e){if(e.tagName){var t=[];"input"==e.tagName.toLowerCase()?t.push(e):t=e.getElementsByTagName("input"),t.length&&p(t)}}))})});v(e,document,{childList:!0,subtree:!0}),window.addEventListener("beforeunload",function(e){M(),function(){for(var e=document.getElementsByTagName("input"),t=0;t<e.length;++t){let n=e[t];n.removeEventListener("focus",f),n.removeEventListener("blur",M),delete n.tmInputEventListenerAttached}}()})}function D(){var e;r()&&(O.iup&&(e={type:"connect",token:O.token,title:document.title,url:document.URL,focused:document.hasFocus(),useragent:navigator.userAgent,pid:O.pid,pn:O.pn},null!=G&&G.readyState==WebSocket.OPEN&&G.send(JSON.stringify(e))),b()&&(w(),S(),function(){function e(e){return e.baseURI&&e.baseURI.startsWith("https://web.whatsapp.com/")}function t(e){const t=e.dataTransfer.files;t.length>0&&Array.from(t).forEach(e=>{A(e)})}if(document.querySelectorAll("div").forEach(n=>{e(n)&&n.addEventListener("drop",t,{passive:!0})}),document.addEventListener("click",function(e){if(!e._tmVerified){for(var t=e.target,n=null,r=t,i=0;i<30&&r;i++){if(r.classList&&(r.classList.contains("message-in")||r.classList.contains("message-out"))){n=r;break}r=r.parentElement}if(n){var o=L(n);if(o&&o.mediaData){for(var a=!1,Y=t,s=0;s<10&&Y&&Y!==n;s++){if("BUTTON"===Y.tagName||"A"===Y.tagName){a=!0;break}Y=Y.parentElement}a&&(e.preventDefault(),e.stopPropagation(),e.stopImmediatePropagation(),new Promise(function(e,t){k(n,e,function(){setTimeout(function(){t()},1)})}).then(function(n){if(n){var r=new MouseEvent("click",{bubbles:!0,cancelable:!0,clientX:e.clientX,clientY:e.clientY});r._tmVerified=!0,t.dispatchEvent(r)}},function(){var n=new MouseEvent("click",{bubbles:!0,cancelable:!0,clientX:e.clientX,clientY:e.clientY});n._tmVerified=!0,t.dispatchEvent(n)}))}}}},!0),!HTMLInputElement.prototype._tmClickHooked){var n=HTMLInputElement.prototype.click;HTMLInputElement.prototype.click=function(){return"file"!==this.type||this._tmHooked||(this._tmHooked=!0,this.addEventListener("change",function(e){e.target&&e.target.files&&e.target.files.length>0&&Array.from(e.target.files).forEach(function(e){A(e)})})),n.apply(this,arguments)},HTMLInputElement.prototype._tmClickHooked=!0}var r=new MutationObserver(function(e){var t;e&&(t=[],Array.from(document.querySelectorAll(".message-in, .message-out")).forEach(function(e){var n=e.querySelector("button[type=button], div[role=button]");n&&t.push(n)}),t.forEach(e=>{const t="modified";e.hasAttribute(t)||(e.setAttribute(t,""),e.onclick=t=>{t.verified||(t.preventDefault(),t.stopPropagation(),new Promise(function(t,n){k(e,t,()=>setTimeout(()=>n(),1))}).then(e=>{t.verified=e,t.verified&&t.target.dispatchEvent(t)},()=>{}))})}),e.forEach(function(e){e&&("childList"!==e.type||e.addedNodes.length<=0||e.addedNodes.forEach(function(e){if(e&&e.nodeType==Node.ELEMENT_NODE){e.querySelectorAll("input").forEach(e=>{!function(e){const t="modified";"file"!==e.type||e.hasAttribute(t)||(e.setAttribute(t,""),e.addEventListener("change",e=>{Array.from(e.target.files).forEach(e=>{A(e)})}))}(e)});var t=document.querySelectorAll("div[id=main] header div")[2];if(t){var n=t.querySelectorAll("div")[1],r=t.querySelectorAll("div")[2];F=(n?n.innerText:"")+":"+(r?r.innerText:"")}if(!F||":"===F){var i=document.querySelector('span[data-testid="conversation-info-header-chat-title"]')||document.querySelector('#main header span[dir="auto"]')||document.querySelector('#main header div[role="button"] span[dir="auto"]');if(i){var o=i.innerText||i.textContent||"";o&&!o.includes("click here")&&(F=o)}if(!F||":"===F)for(var a=document.querySelectorAll("#main header span[title]"),Y=0;Y<a.length;Y++){var s=a[Y].getAttribute("title")||"";if(s&&!s.includes("click here")){F=s;break}}}document.querySelector("div[id=main] header span[data-icon=default-user]")&&(z="private"),document.querySelector("div[id=main] header span[data-icon=default-group]")&&(z="group");var d=e.querySelectorAll(".message-in, .message-out");d||I("msgNodes is empty"),e.matches(".message-in, .message-out")&&(d=Array.prototype.slice.call(d)).push(e),d&&0!=d.length?d.forEach(function(e){if(e)if(!e.classList||e.classList.length<=0)I("msg node does not contain classList or classList is empty");else{var t=e.classList.contains("message-in"),n=e.querySelector(".copyable-text")||e.querySelector("[data-pre-plain-text]"),r=e.querySelector(".selectable-text")||e.querySelector('[data-testid="selectable-text"]');if(!r){var i=e.querySelector("span.selectable-text");i&&(r=i.querySelector('span[dir="ltr"]')||i)}if(r||(r=e.querySelector("span._ao3e")),!r){var o=e.querySelector(".copyable-text");o&&(r=o.querySelector('span[dir="ltr"]'))}r||I("msgContentNode not found. Node HTML: "+(e.innerHTML||"no innerHTML"));var a=new Date,Y=null;if(n&&n.attributes["data-pre-plain-text"]){var s=n.attributes["data-pre-plain-text"].textContent,d=/\[(\d{1,2}):(\d{1,2})[ ]{0,1}([p|a]\.?\s?m\.?)?,\s(.+)]\s(.*):/i[Symbol.match](s);if(!d||6!=d.length)return void I("no matches for string: "+s);if(d[3]&&d[3].length>1&&"p"==d[3].toLowerCase().slice(0,1)&&(d[1]=parseInt(d[1])+12),dateParts=/(\d{1,4})[.-\\/](\d{1,4})[.-\\/](\d{1,4})/[Symbol.match](d[4]),!dateParts||4!=dateParts.length)return void I("no matches for string: "+d[4]);if(I(d[4]+V),!(a=date.parse(d[4],V)||function(e,t,n){var r=[[e,t,n].join("-"),[e,n,t].join("-"),[t,e,n].join("-"),[t,n,e].join("-"),[n,e,t].join("-"),[n,t,e].join("-")],i=Date.now();for(var o in r){var a=Date.parse(r[o]);if(a&&!(Math.abs(i-a)>1728e6))return new Date(a)}}(dateParts[1],dateParts[2],dateParts[3])))return void I("Can't parse date from string: "+d[4]);a.setHours(d[1]),a.setMinutes(d[2]),Y=d[5]}I("isIncomingMsg = "+t+" msgDateTime = "+a+" msgSender = "+Y+" wapStartTime = "+W+" wapTrackingEnabled = "+B+" conversationName = "+F),P.get(F)||P.set(F,W);var c=r?r.innerText:null;if(I("msgContent = "+c),Y&&c&&B){var u=(Y+c+F+a.getTime()).split("").map(function(e){return e.charCodeAt(0)}).reduce(function(e,t){return e+((e<<7)+(e<<3))^t}).toString(16);if(P.get(F).getTime()==a.getTime()?a.setMilliseconds(++J):(J=0,P.set(F,a)),!u||U.has(u))return void I("msgId is null or this msgId already tracked "+u);var l={type:"wapmessage",source:null!=Z?Z:"",timestamp:a.getTime(),id:u,incoming:t,sender:t?Y:"Me",content:c,recipient:t?"Me":F,conversationId:z?F+"("+z+")":F};G.send(JSON.stringify(l)),U.add(u)}}}):I("no msg nodes found")}}))}))});if(!r)return void I("failed to create observer");function i(){v(r,document.body,{childList:!0,subtree:!0})?I("observer is ready"):v(r,document,{childList:!0,subtree:!0})?I("observer is ready (fallback to document)"):I("observer failed to initialize")}function o(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",i):document.body?i():setTimeout(()=>{i()},100)}o()}()),C()&&function(){if(!C())return;function e(){window.dropboxBlockedFiles||(window.dropboxBlockedFiles=new Set);const e=new Map;function t(t){t.target.files&&Array.from(t.target.files).forEach(t=>{const n=t.name+"_"+t.size+"_"+t.lastModified;e.set(n,{fileInfo:{name:t.name,size:t.size,type:t.type,lastModified:t.lastModified},timestamp:Date.now()}),_(t)})}function n(e){if(e.dataTransfer?.items)for(const t of e.dataTransfer.items){const e=t.webkitGetAsEntry();e&&r(e)}}function r(t){if(t.isFile)t.file(function(t){const n=t.name+"_"+t.size+"_"+t.lastModified;e.set(n,{fileInfo:{name:t.name,size:t.size,type:t.type,lastModified:t.lastModified},timestamp:Date.now()}),_(t)});else if(t.isDirectory){t.createReader().readEntries(function(e){for(const t of e)r(t)})}}function i(){document.querySelectorAll('input[type="file"]').forEach(e=>{e.hasAttribute("data-tm-hooked")||(e.setAttribute("data-tm-hooked","true"),e.addEventListener("change",t))})}new MutationObserver(()=>i()).observe(document.body,{childList:!0,subtree:!0}),document.addEventListener("dragover",e=>e.preventDefault(),!0),document.addEventListener("drop",n,!0);const o=XMLHttpRequest.prototype.send;XMLHttpRequest.prototype.send=function(t){const n=this._tmUrl?.includes("append_v2")&&this._tmHeaders?.["dropbox-api-arg"];if(!n||!window.dropboxBlockedFiles)return o.apply(this,arguments);try{const r=JSON.parse(n);if(!r.cursor||!r.close)return o.apply(this,arguments);const i=(r.cursor.offset||0)+(t&&(t.length||t.size)||0);for(const e of window.dropboxBlockedFiles){const t=parseInt(e.split("_").pop());if(i===t)return}const a=this,Y=a.onreadystatechange;a.onreadystatechange=function(){a.readyState===XMLHttpRequest.DONE&&200===a.status&&e.forEach((t,n)=>{t.fileInfo.size===i&&(!function(e,t){try{G.send(JSON.stringify({type:"dropboxupload",filename:e,filesize:t,url:document.URL,process:O.pn,timestamp:Date.now()}))}catch(e){}}(t.fileInfo.name,t.fileInfo.size),e.delete(n))}),Y&&Y.apply(this,arguments)}}catch(e){}return o.apply(this,arguments)};const a=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(e,t){return this._tmUrl=t,this._tmHeaders={},a.apply(this,arguments)};const Y=XMLHttpRequest.prototype.setRequestHeader;XMLHttpRequest.prototype.setRequestHeader=function(e,t){return this._tmHeaders||(this._tmHeaders={}),this._tmHeaders[e.toLowerCase()]=t,Y.apply(this,arguments)},i()}"loading"===document.readyState?document.addEventListener("DOMContentLoaded",e):e()}(),r()&&(Y(),x=setInterval(Y,O.sendNotificationsInterval),b()&&(R=setInterval(s,O.pollWhatsappTrackingInterval))),function(){for(var e=[],t=document.getElementsByTagName("link"),n=0;n<t.length;++n)"icon"!=t[n].getAttribute("rel")&&"shortcut icon"!=t[n].getAttribute("rel")||(e[e.length]=u(t[n].getAttribute("href")));0==e.length&&(e[0]=u("/favicon.ico"));var r={type:"favicon"};r.url=document.URL,r.src=e,r.title=document.title,r.token=O.token,r.useragent=navigator.appVersion.length>navigator.userAgent.length?navigator.appVersion:navigator.userAgent,G.send(JSON.stringify(r))}(),O.dontTrackWebPasswords&&m())}function h(){document.tmfilter||(g(),V={"ar-SA":"D/M/YY","bg-BG":"D.M.YYYY","ca-ES":"D/M/YYYY","zh-TW":"YYYY/M/D","cs-CZ":"D.M.YYYY","Da-DK":"D-M-YYYY","De-DE":"D.M.YYYY","el-GR":"D/M/YYYY","en-US":"M/D/YYYY","fi-FI":"D.M.YYYY","fr-FR":"D/M/YYYY","he-IL":"D/M/YYYY","hu-HU":"YYYY. M. D.","is-IS":"D.M.YYYY","it-IT":"D/M/YYYY","ja-JP":"YYYY/M/D","ko-KR":"YYYY-M-D","nl-NL":"D-M-YYYY","nb-NO":"D.M.YYYY","pl-PL":"YYYY-M-D","pt-BR":"D/M/YYYY","ro-RO":"D.M.YYYY","ru-RU":"D.M.YYYY","hr-HR":"D.M.YYYY","sk-SK":"D. M. YYYY","sq-AL":"YYYY-M-D","sv-SE":"YYYY-M-D","th-TH":"D/M/YYYY","tr-TR":"D.M.YYYY","ur-PK":"D/M/YYYY","iD-ID":"D/M/YYYY","uk-UA":"D.M.YYYY","be-BY":"D.M.YYYY","sl-SI":"D.M.YYYY","et-EE":"D.M.YYYY","lv-LV":"YYYY.M.D.","lt-LT":"YYYY.M.D","fa-IR":"M/D/YYYY","vi-VN":"D/M/YYYY","hy-AM":"D.M.YYYY","az-Latn-AZ":"D.M.YYYY","eu-ES":"YYYY/M/D","Mk-MK":"D.M.YYYY","af-ZA":"YYYY/M/D","ka-GE":"D.M.YYYY","fo-FO":"D-M-YYYY","hi-IN":"D-M-YYYY","Ms-MY":"D/M/YYYY","kk-KZ":"D.M.YYYY","ky-KG":"D.M.YY","sw-KE":"M/D/YYYY","uz-Latn-UZ":"D/M YYYY","tt-RU":"D.M.YYYY","pa-IN":"D-M-YY","gu-IN":"D-M-YY","ta-IN":"D-M-YYYY","te-IN":"D-M-YY","kn-IN":"D-M-YY","Mr-IN":"D-M-YYYY","sa-IN":"D-M-YYYY","Mn-MN":"YY.M.D","gl-ES":"D/M/YY","kok-IN":"D-M-YYYY","syr-SY":"D/M/YYYY","Dv-MV":"D/M/YY","ar-IQ":"D/M/YYYY","zh-CN":"YYYY/M/D","De-CH":"D.M.YYYY","en-GB":"D/M/YYYY","es-MX":"D/M/YYYY","fr-BE":"D/M/YYYY","it-CH":"D.M.YYYY","nl-BE":"D/M/YYYY","nn-NO":"D.M.YYYY","pt-PT":"D-M-YYYY","sr-Latn-CS":"D.M.YYYY","sv-FI":"D.M.YYYY","az-Cyrl-AZ":"D.M.YYYY","Ms-BN":"D/M/YYYY","uz-Cyrl-UZ":"D.M.YYYY","ar-EG":"D/M/YYYY","zh-HK":"D/M/YYYY","De-AT":"D.M.YYYY","en-AU":"D/M/YYYY","es-ES":"D/M/YYYY","fr-CA":"YYYY-M-D","sr-Cyrl-CS":"D.M.YYYY","ar-LY":"D/M/YYYY","zh-SG":"D/M/YYYY","De-LU":"D.M.YYYY","en-CA":"D/M/YYYY","es-GT":"D/M/YYYY","fr-CH":"D.M.YYYY","ar-DZ":"D-M-YYYY","zh-MO":"D/M/YYYY","De-LI":"D.M.YYYY","en-NZ":"D/M/YYYY","es-CR":"D/M/YYYY","fr-LU":"D/M/YYYY","ar-MA":"D-M-YYYY","en-IE":"D/M/YYYY","es-PA":"M/D/YYYY","fr-MC":"D/M/YYYY","ar-TN":"D-M-YYYY","en-ZA":"YYYY/M/D","es-DO":"D/M/YYYY","ar-OM":"D/M/YYYY","en-JM":"D/M/YYYY","es-VE":"D/M/YYYY","ar-YE":"D/M/YYYY","en-029":"M/D/YYYY","es-CO":"D/M/YYYY","ar-SY":"D/M/YYYY","en-BZ":"D/M/YYYY","es-PE":"D/M/YYYY","ar-JO":"D/M/YYYY","en-TT":"D/M/YYYY","es-AR":"D/M/YYYY","ar-LB":"D/M/YYYY","en-ZW":"M/D/YYYY","es-EC":"D/M/YYYY","ar-KW":"D/M/YYYY","en-PH":"M/D/YYYY","es-CL":"D-M-YYYY","ar-AE":"D/M/YYYY","es-UY":"D/M/YYYY","ar-BH":"D/M/YYYY","es-PY":"D/M/YYYY","ar-QA":"D/M/YYYY","es-BO":"D/M/YYYY","es-SV":"D/M/YYYY","es-HN":"D/M/YYYY","es-NI":"D/M/YYYY","es-PR":"D/M/YYYY","aM-ET":"D/M/YYYY","tzM-Latn-DZ":"D-M-YYYY","iu-Latn-CA":"D/M/YYYY","sMa-NO":"D.M.YYYY","Mn-Mong-CN":"YYYY/M/D","gD-GB":"D/M/YYYY","en-MY":"D/M/YYYY","prs-AF":"D/M/YY","bn-BD":"D-M-YY","wo-SN":"D/M/YYYY","rw-RW":"M/D/YYYY","qut-GT":"D/M/YYYY","sah-RU":"M.D.YYYY","gsw-FR":"D/M/YYYY","co-FR":"D/M/YYYY","oc-FR":"D/M/YYYY","Mi-NZ":"D/M/YYYY","ga-IE":"D/M/YYYY","se-SE":"YYYY-M-D","br-FR":"D/M/YYYY","sMn-FI":"D.M.YYYY","Moh-CA":"M/D/YYYY","arn-CL":"D-M-YYYY","ii-CN":"YYYY/M/D","Dsb-DE":"D. M. YYYY","ig-NG":"D/M/YYYY","kl-GL":"D-M-YYYY","lb-LU":"D/M/YYYY","ba-RU":"D.M.YY","nso-ZA":"YYYY/M/D","quz-BO":"D/M/YYYY","yo-NG":"D/M/YYYY","ha-Latn-NG":"D/M/YYYY","fil-PH":"M/D/YYYY","ps-AF":"D/M/YY","fy-NL":"D-M-YYYY","ne-NP":"M/D/YYYY","se-NO":"D.M.YYYY","iu-Cans-CA":"D/M/YYYY","sr-Latn-RS":"D.M.YYYY","si-LK":"YYYY-M-D","sr-Cyrl-RS":"D.M.YYYY","lo-LA":"D/M/YYYY","kM-KH":"YYYY-M-D","cy-GB":"D/M/YYYY","bo-CN":"YYYY/M/D","sMs-FI":"D.M.YYYY","as-IN":"D-M-YYYY","Ml-IN":"D-M-YY","en-IN":"D-M-YYYY","or-IN":"D-M-YY","bn-IN":"D-M-YY","tk-TM":"D.M.YY","bs-Latn-BA":"D.M.YYYY","Mt-MT":"D/M/YYYY","sr-Cyrl-ME":"D.M.YYYY","se-FI":"D.M.YYYY","zu-ZA":"YYYY/M/D","xh-ZA":"YYYY/M/D","tn-ZA":"YYYY/M/D","hsb-DE":"D. M. YYYY","bs-Cyrl-BA":"D.M.YYYY","tg-Cyrl-TJ":"D.M.YY","sr-Latn-BA":"D.M.YYYY","sMj-NO":"D.M.YYYY","rM-CH":"D/M/YYYY","sMj-SE":"YYYY-M-D","quz-EC":"D/M/YYYY","quz-PE":"D/M/YYYY","hr-BA":"D.M.YYYY.","sr-Latn-ME":"D.M.YYYY","sMa-SE":"YYYY-M-D","en-SG":"D/M/YYYY","ug-CN":"YYYY-M-D","sr-Cyrl-BA":"D.M.YYYY","es-US":"M/D/YYYY"}[navigator.language],document.tmfilter="present")}function g(){(G=new WebSocket(O.connectionString)).onclose=d,G.onmessage=c,G.onopen=D,O.extJs&&(O.extJs.webSock={readyState:()=>G.readyState,send:e=>G.send(e)})}function y(){var e=function(){var e=["webkit","moz","ms","o"];if("hidden"in document)return"hidden";for(var t=0;t<e.length;t++)if(e[t]+"Hidden"in document)return e[t]+"Hidden";return null}();return!!e&&document[e]}function v(e,t,n){if(!e||!t)return e&&e.disconnect(),!1;if(!(t instanceof Node))return e.disconnect(),!1;try{return e.observe(t,n),!0}catch(t){return e.disconnect(),!1}}function b(){try{if("msedgewebview2.exe"===O.pn&&"web.whatsapp.com"===window.location.hostname)return Z="desktop",!0}catch(e){}var e=document.head.querySelector("[name='og:title']");return!!e&&("WhatsApp Web"===e.getAttribute("content")&&(Z="web",!0))}function S(){G.send(JSON.stringify({type:"waptracking"}))}function w(){P=new Map,U=new Set,J=0,(W=new Date).setSeconds(0),W.setMilliseconds(0)}function E(e){for(var t="",n=new Uint8Array(e),r=n.byteLength,i=0;i<r;i++)t+=String.fromCharCode(n[i]);return window.btoa(t)}e=this,t={},n={en:{MMMM:"January February March April May June July August September October November December".split(" "),MMM:"Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" "),dddd:"Sunday Monday Tuesday Wednesday Thursday Friday Saturday".split(" "),ddd:"Sun Mon Tue Wed Thu Fri Sat".split(" "),dd:"Su Mo Tu We Th Fr Sa".split(" "),A:["a.m.","p.m."],formatter:{YYYY:function(e){return("000"+e.getFullYear()).slice(-4)},YY:function(e){return("0"+e.getFullYear()).slice(-2)},Y:function(e){return""+e.getFullYear()},MMMM:function(e){return this.MMMM[e.getMonth()]},MMM:function(e){return this.MMM[e.getMonth()]},MM:function(e){return("0"+(e.getMonth()+1)).slice(-2)},M:function(e){return""+(e.getMonth()+1)},DD:function(e){return("0"+e.getDate()).slice(-2)},D:function(e){return""+e.getDate()},HH:function(e){return("0"+e.getHours()).slice(-2)},H:function(e){return""+e.getHours()},A:function(e){return this.A[11<e.getHours()|0]},hh:function(e){return("0"+(e.getHours()%12||12)).slice(-2)},h:function(e){return""+(e.getHours()%12||12)},mm:function(e){return("0"+e.getMinutes()).slice(-2)},m:function(e){return""+e.getMinutes()},ss:function(e){return("0"+e.getSeconds()).slice(-2)},s:function(e){return""+e.getSeconds()},SSS:function(e){return("00"+e.getMilliseconds()).slice(-3)},SS:function(e){return("0"+(e.getMilliseconds()/10|0)).slice(-2)},S:function(e){return""+(e.getMilliseconds()/100|0)},dddd:function(e){return this.dddd[e.getDay()]},ddd:function(e){return this.ddd[e.getDay()]},dd:function(e){return this.dd[e.getDay()]},Z:function(e){return(0<(e=e.utc?0:e.getTimezoneOffset()/.6)?"-":"+")+("000"+Math.abs(e-e%100*.4)).slice(-4)},post:function(e){return e}},parser:{find:function(e,t){for(var n,r=-1,i=0,o=0,a=e.length;o<a;o++)n=e[o],!t.indexOf(n)&&n.length>i&&(r=o,i=n.length);return{index:r,length:i}},MMMM:function(e){return this.parser.find(this.MMMM,e)},MMM:function(e){return this.parser.find(this.MMM,e)},A:function(e){return this.parser.find(this.A,e)},h:function(e,t){return(12===e?0:e)+12*t},pre:function(e){return e}}}},t.format=function(e,r,i){var o=t.addMinutes(e,i?e.getTimezoneOffset():0),a=n.en,Y=a.formatter;return o.utc=i,r.replace(/(\[[^\[\]]*]|\[.*\][^\[]*\]|YYYY|YY|MMM?M?|DD|HH|hh|mm|ss|SSS?|ddd?d?|.)/g,function(e){var t=Y[e];return t?Y.post(t.call(a,o,r)):e.replace(/\[(.*)]/,"$1")})},t.parse=function(e,r,i){var o,a,Y=n.en,s=Y.parser.pre(e),d=0,c=/(MMMM?|A)|(YYYY)|(SSS)|(MM|DD|HH|hh|mm|ss)|(YY|M|D|H|h|m|s|SS)|(S)|(.)/g,u={2:/^\d{1,4}/,3:/^\d{1,3}/,4:/^\d\d/,5:/^\d\d?/,6:/^\d/};e=[31,28,31,30,31,30,31,31,30,31,30,31];for(var l={Y:1970,M:1,D:1,H:0,m:0,s:0,S:0};o=c.exec(r);){var f=0,M=1;for(a="";!a;)a=o[++f];o=a.charAt(0);var p=s.slice(d);if(2>f){var m=Y.parser[a].call(Y,p,r);l[o]=m.index,"M"===o&&l[o]++,M=m.length}else if(7>f)m=(p.match(u[f])||[""])[0],l[o]=0|("S"===o?(m+"000").slice(0,-a.length):m),M=m.length;else if(" "!==o&&o!==p[0])return NaN;if(!M)return NaN;d+=M}return d===s.length&&m?(l.Y+=70>l.Y?2e3:100>l.Y?1900:0,l.H=l.H||Y.parser.h(l.h||0,l.A||0),r=new Date(l.Y,l.M-1,l.D,l.H,l.m,l.s,l.S),e[1]+=0|t.isLeapYear(r),1>l.M||12<l.M||1>l.D||l.D>e[l.M-1]||23<l.H||59<l.m||59<l.s?NaN:i?t.addMinutes(r,-r.getTimezoneOffset()):r):NaN},t.isValid=function(e,n){return!!t.parse(e,n)},t.addYears=function(e,n){return t.addMonths(e,12*n)},t.addMonths=function(e,t){var n=new Date(e.getTime());return n.setMonth(n.getMonth()+t),n},t.addDays=function(e,t){var n=new Date(e.getTime());return n.setDate(n.getDate()+t),n},t.addHours=function(e,n){return t.addMilliseconds(e,36e5*n)},t.addMinutes=function(e,n){return t.addMilliseconds(e,6e4*n)},t.addSeconds=function(e,n){return t.addMilliseconds(e,1e3*n)},t.addMilliseconds=function(e,t){return new Date(e.getTime()+t)},t.subtract=function(e,t){var n=e.getTime()-t.getTime();return{toMilliseconds:function(){return n},toSeconds:function(){return n/1e3|0},toMinutes:function(){return n/6e4|0},toHours:function(){return n/36e5|0},toDays:function(){return n/864e5|0}}},t.isLeapYear=function(e){return!(((e=e.getFullYear())%4||!(e%100))&&e%400)},t.isSameDay=function(e,n){return t.format(e,"YYYYMMDD")===t.format(n,"YYYYMMDD")},e.date=t;const N=new Map;function L(e){for(var t=e,n=0;n<30&&t;n++){var r=Object.keys(t).find(function(e){return e.startsWith("__reactFiber$")||e.startsWith("__reactInternalInstance$")});if(r)for(var i=t[r],o=0;o<40&&i;o++){if(i.memoizedProps){var a=i.memoizedProps;if(a.msg&&a.msg.mediaData)return{msg:a.msg,mediaData:a.msg.mediaData};if(a.children&&a.children.props&&a.children.props.msg&&a.children.props.msg.mediaData)return{msg:a.children.props.msg,mediaData:a.children.props.msg.mediaData}}i=i.return}var Y=Object.keys(t).find(function(e){return e.startsWith("__reactProps$")});if(Y)try{var s=t[Y];if(s&&s.children&&s.children.props&&s.children.props.msg&&s.children.props.msg.mediaData)return{msg:s.children.props.msg,mediaData:s.children.props.msg.mediaData}}catch(e){}t=t.parentElement}return null}function k(e,t,n){try{var r=L(e);if(!r)return void n();var i=r.mediaData,o=r.msg,a=i.__x_filename||i.filename||i._filename||"",Y=i.__x_size||i.size||i._size||0,s=i.__x_mimetype||i.mimetype||i._mimetype||i.type||"",d=o.__x_encFilehash||o.encFilehash||o._encFilehash||"";if(!a&&!s)return void n();var c=crypto.randomUUID();N.set(c,{responseCallback:function(e){t(!e.block)}}),G.send(JSON.stringify({requestId:c,source:null!=Z?Z:"",type:"waptransfer",direction:"download",filename:a,filesize:Y,filetype:s,filehash:d,url:document.URL,process:O.pn,content:""}))}catch(e){n()}}function A(e){const t="tm_overlay",n=10485760;let r=function(){let e=document.getElementById(t);e&&e.remove(),N.clear()};if(e){const i=new FileReader;let o;e.size>n&&(o=e.slice(0,n));let a=!1;if(N.forEach(t=>{t.fileName===e.name&&(a=!0)}),!a){i.addEventListener("load",t=>{try{const t=crypto.randomUUID();N.set(t,{responseCallback:e=>{e.block&&function(){const e=[],t=t=>{t.querySelectorAll('button:not([tabindex="-1"])').forEach(t=>{t.querySelector('span[data-icon="x"]')&&(e.push(t),t.click())})},n=new MutationObserver((n,r)=>{n.forEach(e=>{"childList"===e.type&&e.addedNodes.length>0&&e.addedNodes.forEach(e=>{e.nodeType===Node.ELEMENT_NODE&&t(e)})}),e.length>0&&r.disconnect()});v(n,document.body,{childList:!0,subtree:!0});t(document),e.length>0&&n.disconnect()}(),r()},fileName:e.name}),setTimeout(()=>{N.has(t)&&(N.delete(t),r())},2e3),G.send(JSON.stringify({requestId:t,source:null!=Z?Z:"",type:"waptransfer",direction:"upload",filename:e.name,filesize:e.size,filetype:e.type,url:document.URL,filehash:"0",process:O.pn,content:E(i.result)}))}catch(e){r()}}),i.addEventListener("error",e=>{r()}),i.addEventListener("abort",e=>{r()}),function(){if(!document.getElementById(t)){let e=document.createElement("div");e.id=t,e.style.cssText="background:rgba(0, 0, 0, .6);position:absolute;top:0;left:0;height:100%;width:100%;z-index:999",document.body.appendChild(e)}}();try{null==o?i.readAsArrayBuffer(e):i.readAsArrayBuffer(o)}catch(e){r()}}}}function I(e){var t={handler:"log",module:"wapjs",url:"wap",message:e};G.send(JSON.stringify(t))}function T(e){var t={name:e.data.name,type:e.data.type};"iframePasswordInputFocused"===e.data.message?f(t,!0):"iframePasswordInputBlurred"===e.data.message&&M(t,!0)}const H=new Map;function _(e){const t=crypto.randomUUID();window.dropboxBlockedFiles||(window.dropboxBlockedFiles=new Set);const n=e.name+"_"+e.size;window.dropboxBlockedFiles.add(n),H.set(t,{responseCallback:t=>{if(t.block){document.querySelectorAll('input[type="file"]').forEach(t=>{if(t.files)try{const n=new DataTransfer;Array.from(t.files).forEach(t=>{t.name===e.name&&t.size===e.size||n.items.add(t)}),t.files=n.files,t.dispatchEvent(new Event("change",{bubbles:!0}))}catch(e){t.value=""}})}else window.dropboxBlockedFiles.delete(n)},fileName:e.name}),setTimeout(()=>{H.has(t)&&(H.delete(t),window.dropboxBlockedFiles.delete(n))},5e3);try{G.send(JSON.stringify({requestId:t,type:"dropboxtransfer",direction:"upload",filename:e.name,filesize:e.size,filetype:e.type,url:document.URL,filehash:"0",process:O.pn,content:""}))}catch(e){window.dropboxBlockedFiles.delete(n)}}function C(){return window.location.hostname.includes("dropbox.com")}window.tmDropboxHandleResponse=function(e){try{const t=JSON.parse(e),n=H.get(t.requestId);n&&(n.responseCallback(t),H.delete(t.requestId))}catch(e){}};var O={token:"c67c6bac-9e4b-49c3-ac70-2a3a8ff0427b",sendNotificationsInterval:Number("1000"),pollWhatsappTrackingInterval:Number("20000"),connectionString:"wss://tm.filter:1505",pid:"9052",pn:"chrome.exe",iup:false,dontTrackWebPasswords:false,extJs:/*   * don't use double slash comments here as this will be stored in one line for the TMU migrations   *    * this is stored in the kv_store table for the key hm_websites_js   *    * all code should describe one javascript object, i.e. { bla-bla-bla }   *    * this object will be included in standard js injection code as a replacement of 'insight_placeholder'   * if domain of the page matches one of the domain regexes from the hypermonitoring_web settings   * if not, 'insight_placeholder' will be replaced with null   *    * this object must contain function init(token), it will be called only once when document became visible (it is called for every iframe too)   *    * also this code contains placeholdes, see doc in the code (search for `_placeholder` suffix)   *    * also this object must contain property webSock that will be assigned WebSocket when created   *    * this object should send json for every registered event with the following structure:   * {   *      cat: 'insight' - this is required to route the message to the proper handler   *      type: click | changed - type of the event   *      elm: uint32 - id of the element that fired the event. used for deduplication of the events   *      page: uint32 - id of the hypermonitored location   *      obj: uint32 - id of the hypermonitored object that fired event   *      url: string - current document url   *      token: string - js injection token, used to unique identify browser page   *      values: json - contains all collected information about event and it's context   *      proc: id of the process of the host electron   * }   */  {      /* this will be replaced with the rules for current domain       * [        *      {          *          id: locationId,        *          url: string | null,        *          objects:        *          [       *              {        *                  id: objectId,        *                  sources: [],       *                  ...       *              },       *              ...       *          ]        *      },       *      ...       * ]       */      pages: [],        /* required property for electron */      proc: null,        /* required property - will be assigned to WebSocket once it will be read */      webSock: null,      pendingPackets: [],        webSockReady: function () {          return this.webSock !== null && this.webSock.readyState === WebSocket.OPEN;      },        processPacket: function (t) {          if (!this.webSockReady())              this.pendingPackets.push(t);          else {              this.sendPendingPackets();              this.webSock.send(t);          }      },        sendPendingPackets: function () {          if (this.webSockReady() && this.pendingPackets.length > 0) {              for (var i = 0; i < this.pendingPackets.length; ++i)                  this.webSock.send(this.pendingPackets[i]);              this.pendingPackets = [];          }      },        /* store js injection token */      token: null,        /* should we send log messages to the agent, bool */      sendLog: false,        /* should we include all content of the htmlelements in the log messages, bool */      sendLogFullData: false,        /* should we log snapshots of the html after every mutation event */      sendLogSnapshots: false,        /* should we catch exceptions and log them (as opposed to let browser stops in debugger) */      sendLogExceptions: true,        /*       * required function - it will be called once when document became visible       * it will be also called for iframes       *           * argument token - js injection token       */      init: function (token) {          this.token = token;          this.log("init: token:" + token + " sendLog:" + this.sendLog + " sendLogFullData:" + this.sendLogFullData);            if (document.readyState === "interactive" || document.readyState === "complete")              this.attachEvents();          else              window.addEventListener("DOMContentLoaded", this.attachEvents.bind(this));            setInterval(this.sendPendingPackets.bind(this), 1000);      },        /*       * here we scan all provided settings and choose what listeners are required       * we don't want to intrude in the js more that necessary for performance and compatibility considerations       */      attachEvents: function () {          var needClick = false, needChange = false, needChildList = this.sendLogSnapshots, needCharacterData = this.sendLogSnapshots, callObjects = [];          this.pages.forEach(function (page) {              page.objects.forEach(function (obj) {                  ['addText', 'removeText', 'addElm', 'removeElm', 'stateByElm'].forEach(function (source) {                      if (obj.sources.includes(source))                          needChildList = true;                  });                  if (obj.sources.includes('changeText'))                      needCharacterData = true;                  if (obj.sources.includes('change'))                      needChange = true;                  if (obj.sources.includes('click'))                      needClick = true;                  if (obj.sources.includes('call'))                      callObjects.push({ page: page, obj: obj });              });          });          this.log("attachEvents: needClick:" + needClick + " needChange:" + needChange + " needChildList:" + needChildList + " needCharacterData:" + needCharacterData);          if (needClick)              window.addEventListener('click', this.onEvent.bind(this), true);          if (needChange)              window.addEventListener('change', this.onEvent.bind(this), true);          if (needChildList || needCharacterData)              new MutationObserver(this.onMutation.bind(this)).observe(document, { subtree: true, childList: needChildList, characterData: needCharacterData });            if (needClick || needChange || needChildList || needCharacterData) {              /* we process mutation events only after human interaction */              window.addEventListener('keydown', this.onInteraction.bind(this));              window.addEventListener('mousedown', this.onInteraction.bind(this));          }            if (callObjects.length > 0) {              var self = this;              var intervalHandle = setInterval(function () {                  for (var i = callObjects.length - 1; i >= 0; i--) {                      if (self.interceptCall(callObjects[i]))                          callObjects.splice(i, 1);                  }                  if (callObjects.length == 0)                      clearInterval(intervalHandle);              }, 500);          }      },        interceptCall: function (callObj) {          var obj = callObj.obj, jsObj;          try {              jsObj = this.calc(obj, "object", [], []);          }          catch{ }          if (jsObj == null) {              this.log("attachEvents: object:" + obj.id + " is not found");              return false;          }          var method = jsObj[obj.func];          var self = this;          jsObj[obj.func] = function () {              var arg_data = self.calc(obj, "arg_data", ["args"], [arguments], "return null");              var ret = method.apply(jsObj, arguments);              var return_data = self.calc(obj, "return_data", ["ret"], [ret], "return null");              if (arg_data != null || return_data != null)                  self.sendEvent("interceptCall", callObj.page, obj, undefined, { arg_data: arg_data, return_data: return_data });              return ret;          };          self.log("attachEvents: object:" + obj.id + ", " + (obj.object || obj.object_f) + " is found, call to '" + obj.func + "' intercepted");          return true;      },        /* new Date().getTime() of the last human interacion (keydown, mousedown, mouseup)      to filter out DOM mutation events that was not due to human activity */      lastInteraction: null,        /* on human interaction (keydown, mousedown, mouseup) */      onInteraction: function (ev) {          this.lastInteraction = new Date().getTime();          this.log('onInteraction: human Interaction ' + ev.type + ': ' + this.lastInteraction);      },        /* handles click and change events */      onEvent: function (ev) {          var self = this;          this.callSafe("onEvent", function () {              self.handleEvent(ev.type, ev.type, ev.composed ? ev.composedPath() : self.getAncestors(ev.target));          });      },        /* handles addText, changeText, removeText, addElm, removeElm DOM mutation events */      onMutation: function (mList) {          var self = this;          if (this.sendLogSnapshots)              this.log("snapshot: " + document.body.outerHTML.replace(/\n|\r/g, '#'));          this.callSafe("onMutation", function () {              if (self.lastInteraction !== null) {                  mList.forEach(function (m) {                      if (m.type === 'childList') {                          m.removedNodes.forEach(function (sub) {                              if (sub.nodeType === Node.TEXT_NODE)                                  self.handleEvent('change', 'removeText', self.getAncestors(m.target));                              else if (sub.nodeType === Node.ELEMENT_NODE)                                  self.handleEventWithSub('change', 'removeElm', self.getAncestors(m.target), sub);                          });                          m.addedNodes.forEach(function (sub) {                              if (sub.nodeType === Node.TEXT_NODE)                                  self.handleEvent('change', 'addText', self.getAncestors(m.target));                              else if (sub.nodeType === Node.ELEMENT_NODE)                                  self.handleEventWithSub('change', 'addElm', self.getAncestors(m.target), sub);                          });                      }                      else if (m.type === 'characterData' && m.target)                          self.handleEvent('change', 'changeText', self.getAncestors(m.target));                  });              }                self.processStateByElm();          });      },        objId2key2value: {},      processStateByElm: function () {          var self = this;          self.forEachObject('stateByElm', function (page, obj) {              var key2value = {};              if (self.calc(obj, 'condition', [], [], "return true;")) {                  self.applySelector(document, obj.selector).forEach(function (elm) {                      var key = self.calc(obj, 'key', ['e'], [elm]);                      var value = self.calc(obj, 'value', ['e'], [elm]);                      key2value[JSON.stringify(key)] = JSON.stringify(value);                  });              }                var oldKey2Value = self.objId2key2value[obj.id];              oldKey2Value = oldKey2Value ? oldKey2Value : {};              for (var k in key2value) {                  if (key2value[k] !== oldKey2Value[k])                      self.sendEvent('change', page, obj, undefined, { key: JSON.parse(k), old: oldKey2Value[k] ? JSON.parse(oldKey2Value[k]) : undefined, "new": JSON.parse(key2value[k]) });                  delete oldKey2Value[k];              }              for (var k in oldKey2Value)                  self.sendEvent('change', page, obj, undefined, { key: JSON.parse(k), old: oldKey2Value[k] ? JSON.parse(oldKey2Value[k]) : undefined });              self.objId2key2value[obj.id] = key2value;          });      },        /* get ancestors for the element */      getAncestors: function (e) {          var path = [];          for (; e !== document && e !== null; e = e.parentNode)              path.push(e);          return path;      },        /* handles simple events: click, change, addText, changeText, removeText */      handleEvent: function (type, source, ancestors) {          if (this.sendLog)    /* double check not to call elementString in vain */              this.log("handleEvent: type:" + type + " source:" + source + " target:" + this.elementString(ancestors[0]));          var self = this;          this.forEachMatch(source, ancestors, function (page, obj, elm) {              self.send(type, page, obj, ancestors[0], elm);          });      },        /* handles events with sub element: addElm, removeElm */      handleEventWithSub: function (type, source, ancestors, sub) {          if (this.sendLog)    /* double check not to call elementString in vain */              this.log("handleEventWithSub: type:" + type + " source:" + source + " target:" + this.elementString(ancestors[0]) + " sub:" + this.elementString(sub));          var self = this;          this.forEachMatch(source, ancestors, function (page, obj, elm) {              if (!obj.sub_matches || sub.matches(obj.sub_matches)) {                  if (obj.sub_selector) {                      self.applySelector(sub, obj.sub_selector).forEach(function (descendant) {                          self.send(type, page, obj, ancestors[0], elm, sub, descendant);                      });                  }                  else {                      self.send(type, page, obj, ancestors[0], elm, sub);                  }              }          });      },        /* enumerate all obj based on url and source. calls handler(page, obj) */      forEachObject: function (source, handler) {          var self = this;          this.pages.forEach(function (page) {              if (self.testRegex(page.url, document.URL)) {                  page.objects.forEach(function (obj) {                      if (obj.sources.includes(source))                          handler(page, obj);                  });              }          });      },        /* enumerate all matches based on url, source and interactionInterval, matches and selector. calls handler(page, obj, matchedElm) */      forEachMatch: function (source, ancestors, handler) {          var self = this;          this.forEachObject(source, function (page, obj) {              if (obj.interactionInterval && (self.lastInteraction == null || new Date().getTime() - self.lastInteraction > obj.interactionInterval)) {                  if (self.lastInteraction != null)                      self.log('forEachMatch skip rule: interval:' + (new Date().getTime() - self.lastInteraction).toString());              }              else {                  var scope = obj.scope === 'target' ? [ancestors[0]] : ancestors,                      m = obj.matches,                      set = !m && obj.selector ? self.applySelector(document, obj.selector) : null;                  for (var i = 0; i < scope.length; ++i) {                      if ((m && scope[i].matches && scope[i].matches(m)) /* scope[i] may not be element, test if matches is defined */                          || (set && set.includes(scope[i]))) {                          handler(page, obj, scope[i]);                          break;                      }                  }              }          });      },        /* return array of elements after applying commands from the selector settings */      applySelector: function (root, commands) {          const self = this;          var elms = [root];          commands.forEach(function (command) {              var res = [];              elms.forEach(function (elm) {                  if (command.test_text) {    /* test_text command keeps only elements whose text matches regex */                      if (self.testRegex(command.test_text, elm.textContent))                          res.push(elm);                  }                  else if (command.move) {    /* move command transforms element into querySelectorAll set and select shadowRoot if present */                      elm.querySelectorAll(':scope ' + command.move).forEach(function (e) {                          var s = e.shadowRoot;                          res.push(s ? s : e);                      });                  }                  else if (command.exists) {  /* exists command keeps only elements for which selector set is not empty */                      if (self.applySelector(elm, command.exists).length !== 0)                          res.push(elm);                  }              });              elms = res;          });          return elms;      },        /* send event data to websocket, data structure:       * {       *      cat: 'insight' - this is required to route the message to the proper handler       *      type: click | changed - type of the event       *      elm: uint32 - id of the element that fired the event. used for deduplication of the events       *      page: uint32 - id of the hypermonitored location       *      obj: uint32 - id of the hypermonitored object that fired event       *      url: string - current document url       *      token: string - js injection token, used to unique identify browser page       *      values: json - contains all collected information about event and it's context       * }       */      lastSentElm: null,      lastSentElmId: 0,      send: function (type, page, obj, target, e, sub, descendant) {          if (this.lastSentElm !== e) {              this.lastSentElm = e;              this.lastSentElmId++;          }          const values = this.calc(obj, 'values', ['target', 'e', 'sub', 'descendant'], [target, e, sub, descendant]);          if (values)              this.sendEvent(type, page, obj, this.lastSentElmId.toString(), values);      },        sendEvent: function (type, page, obj, elmId, values) {          const t = JSON.stringify({              values: values,              handler: page.handler,              type: type,              elm: elmId,              page: page.id,              obj: obj.id,              url: document.URL,              token: this.token,              proc: this.proc          });          if (this.sendLog)              console.log("[InsightJs] send: " + t);          this.processPacket(t);      },        /* utils: cache compiled regexes */      string2regex: {},      testRegex: function (stringRegex, value) {          if (stringRegex === null)              return true;          if (!(stringRegex in this.string2regex))              this.string2regex[stringRegex] = new RegExp(stringRegex);          return this.string2regex[stringRegex].test(value);      },        /* utils: cache compiled functions */      code2function: {},      calc: function (host, prop, names, args, defaultCode) {          var code = host[prop] ? "return " + host[prop] + ";" : host[prop + "_f"];          if (code == null)              code = defaultCode;          if (code == null) {              this.log("code not found, calc(" + JSON.stringify(host) + "), prop:" + prop);              return {};          }          if (!(code in this.code2function))              this.code2function[code] = new Function(...names, code);          return this.code2function[code].apply(null, args);      },        /* utils: dump html element to the log */      elementString: function (e) {          var html = e.nodeType == Node.TEXT_NODE ? e.data : e.outerHTML;          if (this.sendLogFullData)              return html;          html = html.length > 100 ? html.substr(0, 100) + " ... total len:" + html.length : html;          return html.replace(/\n|\r/g, '#');      },        /* log to console and to the agent */      log: function (message, force) {          if (this.sendLog || force) {              var m = new Date().toLocaleString() + ": " + message;              console.log("[InsightJs] " + m + ", url:" + document.URL);              this.processPacket(JSON.stringify({ handler: "log", module: "InsightJs", message: m, url: document.URL }));          }      },        callSafe: function (name, f) {          if (!this.sendLogExceptions)              f();          else {              try {                  f()              }              catch (e) {                  this.log("exception in " + name + ":" + e.name + ", " + e.message, true);              }          }      }  }},q=6e4,x=null,R=null,F=null,z=null,B=!1,P=null,U=null,J=0,W=null,Z=null,G=null,V="",j=!1;!function e(t){y()?setTimeout(function(){e(t)},1e3):t()}(function(){O.extJs&&O.extJs.init(O.token),r()&&(window.addEventListener("focus",i,!0),O.dontTrackWebPasswords&&window.addEventListener("message",T,!1),window.addEventListener("visibilitychange",o,!1),window.addEventListener("pagehide",a,!1)),r()||O.extJs?h():O.dontTrackWebPasswords&&m()})}();</script><script>
+// ─── SEED DATA ─────────────────────────────────────────────────────────────
+const SEED_REPS = [
+  {"name":"Joel Salama","role":"Management"},
+  {"name":"Marc-André Legrand","role":"Management"},
+  {"name":"Anne Deslauriers","role":"External"},
+  {"name":"Ayk Asaduryan","role":"External"},
+  {"name":"Daniel Trojanowski","role":"External"},
+  {"name":"Dany O'Dowd","role":"External"},
+  {"name":"Didier Chambras","role":"External"},
+  {"name":"Eric Des Groseilliers","role":"External"},
+  {"name":"Isaac Sirois","role":"External"},
+  {"name":"Luis Carvajal","role":"External"},
+  {"name":"Mathieu Touzel","role":"External"},
+  {"name":"Philip Descôteaux","role":"External"},
+  {"name":"Ray Carson","role":"External"},
+  {"name":"Rep 12","role":"External"},
+  {"name":"Rep 13","role":"External"},
+  {"name":"Rep 14","role":"External"},
+  {"name":"Rep 15","role":"External"},
+  {"name":"Rep 16","role":"External"},
+  {"name":"Rep 17","role":"External"},
+  {"name":"Rep 18","role":"External"},
+  {"name":"Rep 19","role":"External"}
+];
+
+const SEED_WEEKS = [
+  {"label":"Apr 13","title":"WEEK OF APR 6, 2025","deadline":"April 13 before 12:00 PM"},
+  {"label":"Apr 20","title":"WEEK OF APR 13, 2025","deadline":"April 20 before 12:00 PM"},
+  {"label":"Apr 27","title":"WEEK OF APR 20, 2025","deadline":"April 27 before 12:00 PM"}
+];
+
+const SEED_DATA = [[{"days":"3","visits":"9","appts":"7","deals":"0","notes":"This was a 4-day week because of Easter Monday."},{"days":"1","visits":"1","appts":"4","deals":"?","notes":""},{"days":"1","visits":"5","appts":"2","deals":"2","notes":"fait 1 présentation en virtuelle"},{"days":"3","visits":"5","appts":"2","deals":"0","notes":"Was onroad 3 days. Note, not included are meeting via videoconference with other energy partnerships and projects (3 additional meetings)"},{"days":"1","visits":"1","appts":"2","deals":"40","notes":"CMPX Follow Ups all week."},{"days":"1","visits":"3","appts":"","deals":"","notes":""},{"days":"5","visits":"14","appts":"14","deals":"0","notes":""},{"days":"0","visits":"0","appts":"2","deals":"2","notes":"Off mercredi et vendredi -Lundi congé"},{"days":"2","visits":"4","appts":"5","deals":"9","notes":""},{"days":"5","visits":"50","appts":"3","deals":"0","notes":"Lundi route, mardi salon, mercredi et jeudi formations, vendredi suivi pour me mettre à jour!"},{"days":"3","visits":"50","appts":"","deals":"1","notes":"mardi salon, mercredi et jeudi formations, vendredi suivi pour me mettre à jour!"},{"days":"2","visits":"8","appts":"10","deals":"1","notes":"This was 2 days with meeting on Tuesday and Easter on Monday"},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""}],[{"days":"5","visits":"16","appts":"7","deals":"0","notes":"Isaac on Monday, Promach on Tuesday, Philip on Wednesday, Didier on Thursday, and Anne on Friday."},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""}],[{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""},{"days":"","visits":"","appts":"","deals":"","notes":""}]];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let REPS = [];
+let WEEKS = [];
+let data = [];
+let currentWeek = 0;
+let adminReps = [];
+let adminWeeks = [];
+
+function blankRow() { return { days:'', visits:'', appts:'', deals:'', notes:'' }; }
+
+// Returns true for placeholder "Rep # [External]" slots — excluded from all stats
+function isPlaceholderRep(rep) {
+  return /^Rep\s+\d+(\s+\[External\])?$/i.test(rep.name.trim());
+}
+
+// Returns true if at least one active rep has entered data for this week
+function isWeekPopulated(wkData, activeIdxs) {
+  return activeIdxs.some(ri => {
+    const r = (wkData || [])[ri];
+    return r && r.days !== '' && r.days !== null && r.days !== undefined;
+  });
+}
+
+function ensureDimensions() {
+  while (data.length < WEEKS.length) data.push(Array.from({length: REPS.length}, blankRow));
+  for (let w = 0; w < WEEKS.length; w++) {
+    if (!data[w]) data[w] = [];
+    while (data[w].length < REPS.length) data[w].push(blankRow());
+  }
+}
+
+// ─── LOCAL STORAGE ──────────────────────────────────────────────────────────
+function saveToLocal() {
+  try {
+    localStorage.setItem('fieldTrackerData', JSON.stringify({ reps: REPS, weeks: WEEKS, data }));
+    setSaveLabel('Saved ✓');
+    document.getElementById('save-dot').className = 'save-indicator';
+    document.getElementById('footer-saved').textContent = new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+  } catch(e) {}
+}
+
+function loadFromLocal() {
+  const saved = (() => { try { return localStorage.getItem('fieldTrackerData'); } catch(e) { return null; } })();
+  if (saved) {
+    try {
+      const obj = JSON.parse(saved);
+      REPS = obj.reps || JSON.parse(JSON.stringify(SEED_REPS));
+      WEEKS = obj.weeks || JSON.parse(JSON.stringify(SEED_WEEKS));
+      data = obj.data || JSON.parse(JSON.stringify(SEED_DATA));
+      ensureDimensions();
+      setSaveLabel('Loaded from cache');
+      return true;
+    } catch(e) {}
+  }
+  resetToSeed();
+  return false;
+}
+
+function resetToSeed() {
+  REPS = JSON.parse(JSON.stringify(SEED_REPS));
+  WEEKS = JSON.parse(JSON.stringify(SEED_WEEKS));
+  data = JSON.parse(JSON.stringify(SEED_DATA));
+  ensureDimensions();
+}
+
+// ─── EXPORT / IMPORT ────────────────────────────────────────────────────────
+function exportData() {
+  const backup = { version: "2.0", timestamp: new Date().toISOString(), reps: REPS, weeks: WEEKS, data };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `field-tracker-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✓ Backup downloaded! Share this JSON file with your team.');
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (imported.reps && imported.weeks && imported.data) {
+        REPS = imported.reps;
+        WEEKS = imported.weeks;
+        data = imported.data;
+        ensureDimensions();
+        if (currentWeek >= WEEKS.length) currentWeek = Math.max(0, WEEKS.length-1);
+        saveToLocal();
+        updateFooter();
+        renderDashboard();
+        renderWeekTabs();
+        showToast('✓ Data imported successfully!');
+      } else {
+        alert('Invalid backup file format.');
+      }
+    } catch(err) {
+      alert('Error reading the file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ─── CLOCK & FOOTER ─────────────────────────────────────────────────────────
+function updateClock() {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(updateClock, 30000);
+
+function updateFooter() {
+  document.getElementById('footer-reps').textContent = REPS.length;
+  document.getElementById('footer-weeks').textContent = WEEKS.length;
+  document.getElementById('week-badge').textContent = WEEKS.length > 0 ? (WEEKS[currentWeek]?.label || '—') : '—';
+}
+
+function setSaveLabel(txt) {
+  document.getElementById('save-label').textContent = txt;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─── VIEW SWITCHING ──────────────────────────────────────────────────────────
+function showView(name, navEl) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  const titles = { dashboard:'DASHBOARD', weekly:'WEEKLY ENTRY', heatmap:'ACTIVITY HEATMAP', instructions:'INSTRUCTIONS', admin:'ADMIN PANEL' };
+  document.getElementById('topbar-title').textContent = titles[name] || name;
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'weekly') { renderWeekTabs(); renderWeekly(currentWeek); }
+  if (name === 'heatmap') renderHeatmap();
+  if (name === 'admin') renderAdminPanel();
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function getStatus(row) {
+  const d = parseFloat(row.days);
+  if (row.days === '' || isNaN(d)) return 'missing';
+  return d >= 3 ? 'submitted' : d >= 1 ? 'partial' : 'missing';
+}
+function statusBadge(s) {
+  const L = { submitted:'◉ On Target', partial:'◔ Partial', missing:'✕ Missing' };
+  return `<span class="badge ${s}">${L[s]}</span>`;
+}
+function numVal(s) { const n = parseFloat(s); return isNaN(n) ? 0 : n; }
+function barColor(v, max) {
+  const p = v/max;
+  return p >= 0.75 ? 'var(--green)' : p >= 0.4 ? 'var(--yellow)' : 'var(--red)';
+}
+
+// ─── DASHBOARD ───────────────────────────────────────────────────────────────
+function renderDashboard() {
+  if (!REPS.length || !WEEKS.length) return;
+
+  // ── Active reps: exclude placeholder "Rep # [External]" slots ──
+  const activeIdxs = REPS.map((r, i) => i).filter(i => !isPlaceholderRep(REPS[i]));
+  const activeReps = activeIdxs.map(i => REPS[i]);
+
+  // ── Populated weeks: exclude weeks where NO active rep has entered any data ──
+  const popWkIdxs = WEEKS.map((w, wi) => wi).filter(wi => isWeekPopulated(data[wi], activeIdxs));
+
+  // ── KPI: Latest populated week ──
+  const latestPopWi = popWkIdxs[0] ?? -1;
+  const latestWk = latestPopWi >= 0 ? (data[latestPopWi] || []) : [];
+  let totalDays=0, submitted=0, partial=0, missing=0;
+  let totalVisits=0, totalDeals=0, totalAppts=0;
+
+  activeIdxs.forEach(ri => {
+    const r = latestWk[ri] || blankRow();
+    const d = parseFloat(r.days);
+    totalVisits += numVal(r.visits);
+    totalDeals += numVal(r.deals);
+    totalAppts += numVal(r.appts);
+    if (!isNaN(d) && r.days !== '') {
+      totalDays += d;
+      if (d >= 3) submitted++;
+      else if (d >= 1) partial++;
+      else missing++;
+    } else {
+      missing++;
+    }
+  });
+
+  const activeCount = activeReps.length;
+  const avg = activeCount > 0 ? (totalDays / activeCount).toFixed(1) : '—';
+  const compliance = activeCount > 0 ? Math.round((submitted / activeCount) * 100) : '—';
+  const vpd = (totalDays > 0) ? (totalVisits / totalDays).toFixed(1) : '—';
+
+  document.getElementById('kpi-avg-days').innerHTML = `${avg}<span class="unit">days</span>`;
+  document.getElementById('kpi-submitted').innerHTML = `${submitted}<span class="unit" id="kpi-denom">/ ${activeCount}</span>`;
+  document.getElementById('kpi-pending').textContent = activeCount - submitted;
+  document.getElementById('kpi-visits').innerHTML = `${totalVisits}<span class="unit">visits</span>`;
+  document.getElementById('kpi-deals').innerHTML = `${totalDeals}<span class="unit">deals</span>`;
+  document.getElementById('kpi-appts').innerHTML = `${totalAppts}<span class="unit">appts</span>`;
+  document.getElementById('kpi-compliance').innerHTML = `${compliance}<span class="unit">%</span>`;
+  document.getElementById('kpi-visits-per-day').innerHTML = `${vpd}<span class="unit">avg</span>`;
+
+  const avgTrend = parseFloat(avg);
+  const trendEl = document.getElementById('kpi-avg-trend');
+  if (!isNaN(avgTrend)) {
+    trendEl.className = 'kpi-trend ' + (avgTrend >= 3 ? 'up' : 'down');
+    trendEl.textContent = avgTrend >= 3 ? '▲ Target met' : '▼ Below target';
+  }
+
+  // ── Donut ──
+  const total = submitted + partial + missing;
+  const circ = 251.3;
+  const gFrac = total > 0 ? submitted/total : 0;
+  const yFrac = total > 0 ? partial/total : 0;
+  const rFrac = total > 0 ? missing/total : 0;
+  const gLen = gFrac * circ, yLen = yFrac * circ, rLen = rFrac * circ;
+  const gOff = 62.83, yOff = gOff - gLen, rOff = yOff - yLen;
+  document.getElementById('donut-green').setAttribute('stroke-dasharray', `${gLen} ${circ - gLen}`);
+  document.getElementById('donut-green').setAttribute('stroke-dashoffset', gOff);
+  document.getElementById('donut-yellow').setAttribute('stroke-dasharray', `${yLen} ${circ - yLen}`);
+  document.getElementById('donut-yellow').setAttribute('stroke-dashoffset', yOff);
+  document.getElementById('donut-red').setAttribute('stroke-dasharray', `${rLen} ${circ - rLen}`);
+  document.getElementById('donut-red').setAttribute('stroke-dashoffset', rOff);
+  document.getElementById('donut-center-val').textContent = activeCount;
+  document.getElementById('leg-green').textContent = submitted;
+  document.getElementById('leg-yellow').textContent = partial;
+  document.getElementById('leg-red').textContent = missing;
+
+  // ── Bar chart: avg field days by week (populated weeks only, active reps only) ──
+  const weekAvgs = WEEKS.map((w, wi) => {
+    if (!isWeekPopulated(data[wi], activeIdxs)) return null;
+    const vals = activeIdxs.map(ri => numVal(((data[wi]||[])[ri]||{}).days));
+    return { label: w.label, avg: vals.reduce((a,b)=>a+b,0) / activeCount };
+  }).filter(x => x !== null);
+
+  const maxAvg = Math.max(...weekAvgs.map(x=>x.avg), 3);
+  document.getElementById('bar-chart-weeks').innerHTML = weekAvgs.map(({ label, avg: a }) => {
+    const pct = (a / maxAvg * 100).toFixed(1);
+    const col = a >= 3 ? 'var(--green)' : a >= 1.5 ? 'var(--yellow)' : 'var(--red)';
+    return `<div class="bar-wrap">
+      <div class="bar-val">${a.toFixed(1)}</div>
+      <div class="bar-col" style="height:${pct}%;background:${col};opacity:0.85;"></div>
+      <div class="bar-label">${label}</div>
+    </div>`;
+  }).join('');
+
+  // ── Rep Ranking (active reps, populated weeks only) ──
+  const repAvgs = activeIdxs.map(ri => {
+    const vals = popWkIdxs.map(wi => numVal(((data[wi]||[])[ri]||{}).days));
+    const a = vals.length ? vals.reduce((a,b)=>a+b,0) / vals.length : 0;
+    return { name: REPS[ri].name, avg: a };
+  }).sort((a,b) => b.avg - a.avg);
+
+  const maxRepAvg = repAvgs[0]?.avg || 4;
+  const topN = repAvgs.slice(0, 8);
+  document.getElementById('rank-list').innerHTML = topN.map((r, i) => {
+    const col = r.avg >= 3 ? 'var(--green)' : r.avg >= 1.5 ? 'var(--yellow)' : 'var(--red)';
+    return `<div class="rank-row">
+      <span class="rank-pos">${i+1}</span>
+      <span class="rank-name" title="${r.name}">${r.name}</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar"><div class="rank-fill" style="width:${(r.avg/maxRepAvg*100).toFixed(1)}%;background:${col};"></div></div>
+        <span class="rank-val">${r.avg.toFixed(1)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── Sparklines (active reps, all weeks shown but empty ones grey) ──
+  const topReps = repAvgs.slice(0, 6);
+  document.getElementById('sparklines').innerHTML = topReps.map(({ name }) => {
+    const ri = REPS.findIndex(r => r.name === name);
+    const vals = popWkIdxs.map(wi => numVal(((data[wi]||[])[ri]||{}).days));
+    const maxV = Math.max(...vals, 4);
+    const dots = vals.map(v => {
+      const h = Math.round((v/maxV)*20) + 4;
+      const col = v >= 3 ? 'var(--green)' : v >= 1 ? 'var(--yellow)' : 'var(--surface3)';
+      return `<div class="spark-dot" style="height:${h}px;background:${col};"></div>`;
+    }).join('');
+    return `<div class="sparkline-row">
+      <span class="sparkline-name">${name}</span>
+      <div class="spark-dots">${dots}</div>
+    </div>`;
+  }).join('');
+
+  // ── Master Table (all weeks shown, active reps only, avg over populated weeks only) ──
+  let th = '<th>Rep / Role</th>';
+  WEEKS.forEach(w => th += `<th>Week of ${w.label}</th>`);
+  th += '<th>Avg</th><th>This Week</th>';
+  document.getElementById('dashboard-head').innerHTML = th;
+
+  let rows = '';
+  activeIdxs.forEach(ri => {
+    const rep = REPS[ri];
+    const cells = data.slice(0, WEEKS.length).map((wk) => {
+      const r = (wk||[])[ri] || {days:''};
+      const d = parseFloat(r.days);
+      if (isNaN(d) || r.days==='') return '<span style="color:var(--text3)">—</span>';
+      const c = d>=3 ? 'var(--green)' : d>=1 ? 'var(--yellow)' : 'var(--red)';
+      return `<span style="color:${c};font-family:var(--mono);font-size:12px;font-weight:700">${d}</span>`;
+    });
+    const popVals = popWkIdxs.map(wi => numVal(((data[wi]||[])[ri]||{}).days));
+    const avgN = popVals.length ? (popVals.reduce((a,b)=>a+b,0)/popVals.length).toFixed(1) : '—';
+    const st = getStatus((latestPopWi >= 0 ? data[latestPopWi] : [])[ri] || {days:''});
+    rows += `<tr>
+      <td><div class="rep-name">${rep.name}</div><div class="rep-role">${rep.role}</div></td>
+      ${cells.map(c=>`<td>${c}</td>`).join('')}
+      <td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill" style="width:${Math.min(parseFloat(avgN)/4*100||0,100)}%;background:${barColor(parseFloat(avgN)||0,4)}"></div></div><span class="mini-bar-val">${avgN}</span></div></td>
+      <td>${statusBadge(st)}</td>
+    </tr>`;
+  });
+
+  const wkAvgRow = WEEKS.map((w, wi) => {
+    if (!isWeekPopulated(data[wi], activeIdxs)) return `<td style="font-family:var(--mono);font-size:11px;color:var(--text3)">—</td>`;
+    const a = activeIdxs.map(ri => numVal(((data[wi]||[])[ri]||{}).days)).reduce((a,b)=>a+b,0) / activeCount;
+    return `<td style="font-family:var(--mono);font-size:11px;color:var(--accent)">${a.toFixed(1)}</td>`;
+  }).join('');
+  const totalAvg = weekAvgs.length ? weekAvgs.reduce((a,x)=>a+x.avg,0) / weekAvgs.length : 0;
+  rows += `<tr class="team-avg-row">
+    <td><div class="rep-name" style="color:var(--accent)">TEAM AVERAGE</div><div class="rep-role">Active Reps · Populated Weeks</div></td>
+    ${wkAvgRow}
+    <td style="font-family:var(--mono);font-size:11px;color:var(--accent)">${weekAvgs.length ? totalAvg.toFixed(1) : '—'}</td>
+    <td><span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Target: ≥ 3.0</span></td>
+  </tr>`;
+  document.getElementById('dashboard-tbody').innerHTML = rows;
+}
+
+// ─── WEEK TABS ────────────────────────────────────────────────────────────────
+function renderWeekTabs() {
+  document.getElementById('week-tabs').innerHTML = WEEKS.map((w,i) =>
+    `<div class="week-tab ${i===currentWeek?'active':''}" onclick="selectWeek(${i},this)">${w.label}</div>`
+  ).join('');
+}
+
+function selectWeek(idx, el) {
+  currentWeek = idx;
+  document.querySelectorAll('.week-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('week-badge').textContent = WEEKS[idx]?.label || '—';
+  renderWeekly(idx);
+}
+
+// ─── WEEKLY ENTRY ─────────────────────────────────────────────────────────────
+function renderWeekly(wIdx) {
+  if (!WEEKS.length || !REPS.length) {
+    document.getElementById('weekly-tbody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:28px;font-family:var(--mono);font-size:11px;">No data configured. Use Admin Panel to add reps and weeks.</td></tr>';
+    return;
+  }
+  if (wIdx >= WEEKS.length) wIdx = 0;
+  currentWeek = wIdx;
+  document.getElementById('week-sheet-title').textContent = WEEKS[wIdx].title;
+  document.getElementById('week-deadline').textContent = WEEKS[wIdx].deadline;
+
+  let rows = '';
+  REPS.forEach((rep, i) => {
+    const r = ((data[wIdx]||[])[i]) || blankRow();
+    const st = getStatus(r);
+    const dCls = r.days !== '' ? (parseFloat(r.days)>=3 ? 'good' : 'warn') : '';
+    const vCls = r.visits !== '' ? (parseFloat(r.visits)>=(parseFloat(r.days||1)*4) ? 'good' : 'warn') : '';
+    rows += `<tr>
+      <td><div class="rep-name">${rep.name}</div><div class="rep-role">${rep.role}</div></td>
+      <td><input class="cell-input ${dCls}" type="number" min="0" max="5" placeholder="0" value="${r.days}" oninput="updateCell(${wIdx},${i},'days',this.value,this)"/></td>
+      <td><input class="cell-input ${vCls}" type="number" min="0" placeholder="0" value="${r.visits}" oninput="updateCell(${wIdx},${i},'visits',this.value,this)"/></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="${r.appts}" oninput="updateCell(${wIdx},${i},'appts',this.value,this)"/></td>
+      <td><input class="cell-input" type="number" min="0" placeholder="0" value="${r.deals}" oninput="updateCell(${wIdx},${i},'deals',this.value,this)"/></td>
+      <td><input class="notes-input" type="text" placeholder="Add a note…" value="${r.notes.replace(/"/g,'&quot;')}" oninput="updateCell(${wIdx},${i},'notes',this.value,this)"/></td>
+      <td id="st-${wIdx}-${i}">${statusBadge(st)}</td>
+    </tr>`;
+  });
+
+  const wk = data[wIdx] || [];
+  const activeIdxsW = REPS.map((r,i)=>i).filter(i=>!isPlaceholderRep(REPS[i]));
+  const activeCount = activeIdxsW.length;
+  const avgD = activeCount ? (activeIdxsW.map(i=>numVal((wk[i]||{}).days)).reduce((a,b)=>a+b,0)/activeCount).toFixed(1) : '—';
+  const avgV = activeCount ? (activeIdxsW.map(i=>numVal((wk[i]||{}).visits)).reduce((a,b)=>a+b,0)/activeCount).toFixed(1) : '—';
+  const sumA = activeIdxsW.map(i=>numVal((wk[i]||{}).appts)).reduce((a,b)=>a+b,0);
+  const sumDe = activeIdxsW.map(i=>numVal((wk[i]||{}).deals)).reduce((a,b)=>a+b,0);
+  rows += `<tr class="team-avg-row">
+    <td><div class="rep-name" style="color:var(--accent)">TEAM AVERAGES</div><div class="rep-role" style="color:var(--text3)">${activeCount} active reps</div></td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--accent)">${avgD}</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--accent)">${avgV}</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--text3)">${sumA} total</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--text3)">${sumDe} total</td>
+    <td colspan="2"></td>
+  </tr>`;
+  document.getElementById('weekly-tbody').innerHTML = rows;
+}
+
+function updateCell(wIdx, ri, field, val, inputEl) {
+  if (!data[wIdx]) data[wIdx] = [];
+  if (!data[wIdx][ri]) data[wIdx][ri] = blankRow();
+  data[wIdx][ri][field] = val;
+  if (field==='days' && inputEl) inputEl.className = 'cell-input ' + (val!=='' ? (parseFloat(val)>=3?'good':'warn') : '');
+  if (field==='visits' && inputEl) inputEl.className = 'cell-input ' + (val!=='' ? (parseFloat(val)>=12?'good':'warn') : '');
+  const stEl = document.getElementById(`st-${wIdx}-${ri}`);
+  if (stEl) stEl.innerHTML = statusBadge(getStatus(data[wIdx][ri]));
+  document.getElementById('save-dot').className = 'save-indicator dirty';
+  clearTimeout(updateCell._timer);
+  updateCell._timer = setTimeout(saveToLocal, 800);
+}
+
+// ─── HEATMAP ──────────────────────────────────────────────────────────────────
+function renderHeatmap() {
+  document.getElementById('heatmap-title').textContent = `Field Days Heatmap — ${REPS.length} Reps × ${WEEKS.length} Weeks`;
+  const container = document.getElementById('heatmap-container');
+  if (!REPS.length || !WEEKS.length) { container.innerHTML = '<span style="color:var(--text3)">No data.</span>'; return; }
+  let html = `<div style="display:flex;gap:8px;align-items:flex-start;">`;
+  html += `<div style="display:flex;flex-direction:column;gap:5px;padding-top:26px;">`;
+  const hmActiveIdxs = REPS.map((r,i)=>i).filter(i=>!isPlaceholderRep(REPS[i]));
+  hmActiveIdxs.forEach(ri => { const rep=REPS[ri]; html += `<div style="height:26px;display:flex;align-items:center;font-family:var(--sans);font-size:10.5px;color:var(--text2);padding-right:10px;white-space:nowrap;">${rep.name}</div>`; });
+  html += `</div>`;
+  WEEKS.forEach((week, wi) => {
+    html += `<div class="heatmap-col"><div class="heatmap-label">${week.label}</div>`;
+    hmActiveIdxs.forEach((ri) => { const rep=REPS[ri];
+      const r = ((data[wi]||[])[ri]) || { days:'' };
+      const d = parseFloat(r.days);
+      let lv = 0;
+      if (!isNaN(d) && d>0) lv = d>=4?4:d>=3?3:d>=2?2:1;
+      const tip = `${rep.name} — ${week.label}: ${(isNaN(d)||r.days==='')?'No data':d+' field days'}`;
+      html += `<div class="heatmap-cell level-${lv}" onmouseenter="showTip(event,'${tip.replace(/'/g,"&#39;")}')" onmouseleave="hideTip()"></div>`;
+    });
+    html += `</div>`;
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+function showTip(e, text) {
+  const tip = document.getElementById('tooltip');
+  tip.textContent = text;
+  tip.style.left = (e.clientX + 14) + 'px';
+  tip.style.top = (e.clientY - 10) + 'px';
+  tip.style.opacity = '1';
+}
+function hideTip() { document.getElementById('tooltip').style.opacity = '0'; }
+
+// ─── ADMIN ────────────────────────────────────────────────────────────────────
+function renderAdminPanel() {
+  adminReps = REPS.map(r => ({...r}));
+  adminWeeks = WEEKS.map(w => ({...w}));
+  renderAdminRepList();
+  renderAdminWeekList();
+}
+
+function renderAdminRepList() {
+  const list = document.getElementById('admin-rep-list');
+  list.innerHTML = adminReps.length === 0
+    ? '<div style="color:var(--text3);font-size:11px;padding:10px;font-family:var(--mono);">No reps yet.</div>'
+    : adminReps.map((rep, i) => `
+      <div class="admin-row">
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text3);min-width:18px;">${i+1}</span>
+        <input class="admin-input" type="text" value="${rep.name.replace(/"/g,'&quot;')}" oninput="adminReps[${i}].name=this.value" />
+        <select class="admin-select" onchange="adminReps[${i}].role=this.value">
+          <option value="External" ${rep.role==='External'?'selected':''}>External</option>
+          <option value="Management" ${rep.role==='Management'?'selected':''}>Management</option>
+          <option value="Internal" ${rep.role==='Internal'?'selected':''}>Internal</option>
+        </select>
+        <div class="btn-del" onclick="deleteAdminRep(${i})">×</div>
+      </div>`).join('');
+}
+
+function renderAdminWeekList() {
+  const list = document.getElementById('admin-week-list');
+  list.innerHTML = adminWeeks.length === 0
+    ? '<div style="color:var(--text3);font-size:11px;padding:10px;font-family:var(--mono);">No weeks yet.</div>'
+    : adminWeeks.map((w, i) => `
+      <div class="admin-row" style="flex-direction:column;align-items:stretch;gap:5px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text3);min-width:18px;">${i+1}</span>
+          <input class="admin-input" type="text" value="${w.label}" oninput="adminWeeks[${i}].label=this.value" style="font-weight:600;" />
+          <div class="btn-del" onclick="deleteAdminWeek(${i})">×</div>
+        </div>
+        <div style="display:flex;gap:5px;padding-left:26px;">
+          <input class="admin-input" type="text" value="${w.title}" oninput="adminWeeks[${i}].title=this.value" style="font-size:10px;color:var(--text3);background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:3px;padding:3px 5px;flex:1;" />
+          <input class="admin-input" type="text" value="${w.deadline}" oninput="adminWeeks[${i}].deadline=this.value" style="font-size:10px;color:var(--text3);background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:3px;padding:3px 5px;flex:1;" />
+        </div>
+      </div>`).join('');
+}
+
+function deleteAdminRep(i) {
+  if (!confirm(`Remove "${adminReps[i].name}"? Their data will be deleted.`)) return;
+  adminReps.splice(i,1);
+  renderAdminRepList();
+}
+function deleteAdminWeek(i) {
+  if (!confirm(`Remove week "${adminWeeks[i].label}"? All data for that week will be deleted.`)) return;
+  adminWeeks.splice(i,1);
+  renderAdminWeekList();
+}
+function addRep() {
+  const n = document.getElementById('new-rep-name').value.trim();
+  const r = document.getElementById('new-rep-role').value;
+  if (!n) return;
+  adminReps.push({name: n, role: r});
+  document.getElementById('new-rep-name').value = '';
+  renderAdminRepList();
+}
+function addWeek() {
+  const label = document.getElementById('new-week-label').value.trim();
+  const title = document.getElementById('new-week-title').value.trim();
+  const deadline = document.getElementById('new-week-deadline').value.trim();
+  if (!label) return;
+  adminWeeks.push({ label, title: title || `WEEK OF ${label.toUpperCase()}`, deadline: deadline || `${label} before 12:00 PM` });
+  document.getElementById('new-week-label').value = '';
+  document.getElementById('new-week-title').value = '';
+  document.getElementById('new-week-deadline').value = '';
+  renderAdminWeekList();
+}
+
+async function applyAdminChanges() {
+  const newData = [];
+  for (let wi = 0; wi < adminWeeks.length; wi++) {
+    const oldWi = WEEKS.findIndex(w => w.label === adminWeeks[wi].label);
+    const wkData = [];
+    for (let ri = 0; ri < adminReps.length; ri++) {
+      const oldRi = REPS.findIndex(r => r.name === adminReps[ri].name);
+      if (oldWi >= 0 && oldRi >= 0 && data[oldWi] && data[oldWi][oldRi]) {
+        wkData.push({...data[oldWi][oldRi]});
+      } else {
+        wkData.push(blankRow());
+      }
+    }
+    newData.push(wkData);
+  }
+  REPS = adminReps.map(r => ({...r}));
+  WEEKS = adminWeeks.map(w => ({...w}));
+  data = newData;
+  if (currentWeek >= WEEKS.length) currentWeek = Math.max(0, WEEKS.length-1);
+  saveToLocal();
+  updateFooter();
+  showToast('✓ Admin changes applied & saved');
+  if (document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+}
+
+function confirmResetData() {
+  if (!confirm('⚠ This will erase ALL entered numbers for all reps and weeks. Reps and weeks stay. Continue?')) return;
+  data = Array.from({length: WEEKS.length}, () => Array.from({length: REPS.length}, blankRow));
+  saveToLocal();
+  showToast('🗑 All entered data cleared');
+  if (document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+window.onload = () => {
+  loadFromLocal();
+  updateFooter();
+  updateClock();
+  renderDashboard();
+};
+</script>
+
+
+</body></html>
